@@ -608,6 +608,7 @@ def application():
                 ("userInterface", G(("currentTheme", "@universal-theme"), ("globalPage", 0),
                                     ("addBuiltWithApexToFooter", False))),
                 ("appFormatMasks", G(("date", "DD-MON-YYYY"), ("timestamp", "DS"), ("timestampTimeZone", "DS"))),
+                ("javaScript", G(("fileUrls", "#APP_FILES#js/mbms-nav-fix.js"))),
                 ("authentication", G(("scheme", "@oracle-apex-accounts"))),
                 ("sessionStateProtection", G(("checksumSalt",
                                               "6D4B2F0A9C1E47B8A3D5F7091C2E4B6D8F0A1C3E5B7D9F1A3C5E7B9D1F3A5C7E"))),
@@ -1208,6 +1209,13 @@ def copy_example0():
     t = open(theme, encoding="utf-8").read()
     t = t.replace("baseTheme: ut-26.1", "baseTheme: ut-26.2").replace("theme_42/26.1/", "theme_42/26.2/")
     open(theme, "w", encoding="utf-8").write(t)
+    # Workaround side menu di layar kecil (Universal Theme 26.2.1), lihat apex-static/mbms-nav-fix.js
+    js_dir = os.path.join(OUT, "shared-components", "static-files", "js")
+    os.makedirs(js_dir, exist_ok=True)
+    shutil.copyfile(os.path.join(ROOT, "apex-static", "mbms-nav-fix.js"), os.path.join(js_dir, "mbms-nav-fix.js"))
+    sf = os.path.join(OUT, "shared-components", "static-files.apx")
+    with open(sf, "a", encoding="utf-8") as f:
+        f.write('\nfile "js/mbms-nav-fix.js" (\n    mimeType: text/javascript\n    charSet: utf-8\n)\n')
     shutil.copytree(os.path.join(EXAMPLE0, "shared-components", "static-files", "icons"),
                     os.path.join(OUT, "shared-components", "static-files", "icons"), dirs_exist_ok=True)
 

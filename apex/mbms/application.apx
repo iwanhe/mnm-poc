@@ -36,6 +36,9 @@ app MBMS (
         timestamp: DS
         timestampTimeZone: DS
     }
+    javaScript {
+        fileUrls: #APP_FILES#js/mbms-nav-fix.js
+    }
     authentication {
         scheme: @oracle-apex-accounts
     }

@@ -1,5 +1,6 @@
 import { expect, Page, test } from '@playwright/test';
 import { writeFileSync } from 'fs';
+import * as path from 'path';
 import { collectDiagnostics, login, navState, pageUrl } from './helpers';
 
 /**
@@ -22,6 +23,7 @@ async function installTimeline(page: Page) {
   await page.evaluate(() => {
     const w = window as any;
     w.__navLog = [];
+    (Error as any).stackTraceLimit = 50;
     const t0 = performance.now();
     const desc = (el: any) => {
       if (!el || !el.tagName) return String(el);
@@ -48,7 +50,7 @@ async function installTimeline(page: Page) {
       $.event.trigger = function (event: any, data: any, elem: any, onlyHandlers: any) {
         const type = typeof event === 'string' ? event : event?.type;
         if (type === 'theme42layoutchanged') {
-          log('STACK ' + JSON.stringify(data), (new Error().stack || '').split('\n').slice(2, 14).map((l: string) => l.trim()));
+          log('STACK ' + JSON.stringify(data), (new Error().stack || '').split('\n').slice(2, 40).map((l: string) => l.trim()));
         }
         return orig.apply(this, arguments as any);
       };
@@ -71,9 +73,13 @@ async function openNav(page: Page, method: 'click' | 'tap' = 'click') {
 }
 
 const METHODS = ['click', 'tap'] as const;
+// fix=true: suntikkan apex-static/mbms-nav-fix.js (workaround UT 26.2.1) sebelum membuka menu,
+// untuk membuktikan workaround bekerja di aplikasi sungguhan sebelum di-deploy.
+const FIX_SCRIPT = path.resolve(__dirname, '../../../apex-static/mbms-nav-fix.js');
+const FIXES = [false, true] as const;
 
-for (const p of PAGES) for (const method of METHODS) {
-  test(`side menu tetap terbuka setelah dibuka (${method}) - ${p.label}`, async ({ page, hasTouch }, testInfo) => {
+for (const p of PAGES) for (const method of METHODS) for (const fix of FIXES) {
+  test(`side menu tetap terbuka setelah dibuka (${method}${fix ? ', +fix' : ''}) - ${p.label}`, async ({ page, hasTouch }, testInfo) => {
     test.skip(method === 'tap' && !hasTouch, 'tap hanya untuk device dengan touch');
     test.skip(!!p.compare && !COMPARE_URL, 'APEX_COMPARE_URL tidak di-set');
     const diag = collectDiagnostics(page);
@@ -87,6 +93,9 @@ for (const p of PAGES) for (const method of METHODS) {
       await expect(page.locator('.t-Body')).toBeVisible();
       await page.waitForTimeout(2000);
 
+      if (fix) {
+        await page.addScriptTag({ path: FIX_SCRIPT });
+      }
       const before = await navState(page);
       await installTimeline(page);
 
@@ -107,10 +116,10 @@ for (const p of PAGES) for (const method of METHODS) {
       await page.screenshot({ path: testInfo.outputPath('nav-after-3s.png') });
 
       const timeline = await page.evaluate(() => (window as any).__navLog);
-      const report = JSON.stringify({ page: p, method, before, justAfter, after3s, timeline }, null, 2);
+      const report = JSON.stringify({ page: p, method, fix, before, justAfter, after3s, timeline }, null, 2);
       writeFileSync(testInfo.outputPath('nav-timeline.json'), report);
       // juga ke stdout supaya terbaca langsung di log GitHub Actions
-      console.log(`\n===== nav-timeline ${testInfo.project.name} ${p.alias} ${method} =====\n${report}\n`);
+      console.log(`\n===== nav-timeline ${testInfo.project.name} ${p.alias} ${method}${fix ? ' +fix' : ''} =====\n${report}\n`);
       await testInfo.attach('nav-timeline.json', { body: report, contentType: 'application/json' });
 
       expect(justAfter.navVisible, 'Menu tidak terbuka setelah klik hamburger').toBe(true);
