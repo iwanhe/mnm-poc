@@ -596,8 +596,9 @@ def application():
                 ("logo", G(("type", "text"), ("text", "MBMS"))),
                 ("navigation", G(("homeUrl", O(("page", 1))), ("loginUrl", O(("page", "LOGIN"))))),
                 ("navigationMenu", G(("listTemplate", "@/side-navigation-menu"),
-                                     ("templateOptions", A(["#DEFAULT#", "js-defaultCollapsed", "js-navCollapsed--hidden",
-                                                            "t-TreeNav--styleA"])),
+                                     # Tanpa #DEFAULT#: default template ini = js-defaultCollapsed (menu
+                                     # selalu tertutup lagi di setiap page load). Collapse = tampil ikon.
+                                     ("templateOptions", A(["t-TreeNav--styleA", "js-navCollapsed--default"])),
                                      ("list", "@navigation-menu"))),
                 ("navigationBar", G(("list", "@navigation-bar"), ("listTemplate", "@/navigation-bar"),
                                     ("templateOptions", "#DEFAULT#"))),

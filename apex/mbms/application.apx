@@ -15,10 +15,8 @@ app MBMS (
     navigationMenu {
         listTemplate: @/side-navigation-menu
         templateOptions: [
-            #DEFAULT#
-            js-defaultCollapsed
-            js-navCollapsed--hidden
             t-TreeNav--styleA
+            js-navCollapsed--default
         ]
         list: @navigation-menu
     }
