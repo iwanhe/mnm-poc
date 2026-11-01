@@ -33,7 +33,9 @@ test.describe('smoke', () => {
         await test.step(`${p.no} ${p.alias}`, async () => {
           const before = diag.pageErrors().length;
           await page.goto(pageUrl(base, p.alias, p.no));
-          await page.waitForLoadState('networkidle');
+          await page.waitForLoadState('load');
+          await page.locator('.t-Body, #P9999_USERNAME').first().waitFor({ state: 'visible' });
+          await page.waitForTimeout(1500);
           const body = await page.locator('body').innerText();
           const title = await page.title();
           await page.screenshot({ path: testInfo.outputPath(`p${String(p.no).padStart(5, '0')}.png`), fullPage: true });

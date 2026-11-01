@@ -50,8 +50,10 @@ for (const p of PAGES) {
       if (p.alias !== 'HOME') {
         await page.goto(pageUrl(page.url(), p.alias, p.no));
       }
-      await page.waitForLoadState('networkidle');
-      await page.waitForTimeout(1000);
+      // APEX menjaga koneksi tetap terbuka, jadi 'networkidle' tidak pernah tercapai.
+      await page.waitForLoadState('load');
+      await expect(page.locator('.t-Body')).toBeVisible();
+      await page.waitForTimeout(2000);
 
       const before = await navState(page);
       await installTimeline(page);
@@ -75,6 +77,8 @@ for (const p of PAGES) {
       const timeline = await page.evaluate(() => (window as any).__navLog);
       const report = JSON.stringify({ page: p, before, justAfter, after3s, timeline }, null, 2);
       writeFileSync(testInfo.outputPath('nav-timeline.json'), report);
+      // juga ke stdout supaya terbaca langsung di log GitHub Actions
+      console.log(`\n===== nav-timeline ${testInfo.project.name} ${p.alias} =====\n${report}\n`);
       await testInfo.attach('nav-timeline.json', { body: report, contentType: 'application/json' });
 
       expect(justAfter.navVisible, 'Menu tidak terbuka setelah klik hamburger').toBe(true);

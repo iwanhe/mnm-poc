@@ -21,6 +21,7 @@ export function collectDiagnostics(page: Page) {
     logs,
     async attach(testInfo: TestInfo) {
       writeFileSync(testInfo.outputPath('browser-log.txt'), logs.join('\n'));
+      console.log(`\n===== browser-log ${testInfo.project.name} ${testInfo.title} =====\n${logs.join('\n')}\n`);
       await testInfo.attach('browser-log.txt', { body: logs.join('\n'), contentType: 'text/plain' });
     },
     pageErrors: () => logs.filter((l) => l.includes('[pageerror]')),
