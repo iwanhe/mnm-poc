@@ -33,6 +33,7 @@ Rancangan lengkap ada di [`docs/MBMS-MVP-APEXlang.md`](docs/MBMS-MVP-APEXlang.md
 | `database/mbms_install.sql` | Script instalasi gabungan (tabel, package, trigger, view, data dummy) untuk SQL Workshop |
 | `database/install/0*.sql` | Sumber script per bagian, dijalankan berurutan |
 | `database/install/99_deinstall.sql` | Menghapus semua objek MBMS (sandbox saja) |
+| `database/admin/create_demo_users.sql` | Membuat akun workspace demo dan mendaftarkan role MBMS (`remove_demo_users.sql` untuk menghapus) |
 | `apex-static/mbms-nav-fix.js` | Workaround side menu di HP (bug Universal Theme 26.2.1) |
 | `tools/apexgen/` | Generator scaffold `.apx` dan pemeriksa struktur |
 | `scripts/` | `build-install-sql.sh` (gabung SQL), `package-apex.sh` (buat zip) |
@@ -78,15 +79,29 @@ Script ini membuat:
 
 > Bila import gagal dengan `ORDS Authentication request failed. Reason: Not Found`, buka **SQL Workshop → RESTful Services**. Klik **Register Schema with ORDS** bila tombol itu tersedia, lalu ulangi import.
 
-### 3. Buat user workspace
+### 3. Buat user workspace dan role MBMS
 
 Hak akses MBMS memakai **role di tabel `SYS_USER_ROLE`**, bukan ACL APEX. Setiap orang tetap butuh **akun workspace APEX** untuk login.
+
+**Cara cepat (script SQL, disarankan).** Script ini membuat semua akun di tabel bawah sekaligus mendaftarkan rolenya, sehingga langkah 4 tidak perlu lagi.
+
+1. Login sebagai **workspace administrator**.
+2. Buka **SQL Workshop → SQL Scripts → Upload** → [`database/admin/create_demo_users.sql`](database/admin/create_demo_users.sql) → **Run**.
+3. Buka hasil run (**View Results**). Output berisi **password acak tiap user**. Catat sekarang, karena password itu tidak disimpan di mana pun.
+4. Opsional, sebelum Run, ubah konstanta di awal blok:
+   - `c_password`: satu password untuk semua user. Harus memenuhi password policy workspace.
+   - `c_extra_admin`: username workspace Anda sendiri, untuk didaftarkan sebagai `ADMIN` MBMS.
+
+Script aman dijalankan ulang: user yang sudah ada tidak diubah, dan role tidak diduplikasi. Untuk menghapus semua user demo, jalankan [`database/admin/remove_demo_users.sql`](database/admin/remove_demo_users.sql).
+
+**Cara manual:**
 
 1. Buka menu user (kanan atas) → **Administration** → **Manage Users and Groups** → **Create User**.
 2. Isi **Username**, **Email**, dan **Password**.
 3. Untuk sandbox, set *Require Change of Password on First Use* = **No**.
+4. Lanjutkan ke langkah 4 untuk mendaftarkan role.
 
-Buat user berikut. Nama di bawah ini adalah saran, boleh diganti asal konsisten di langkah 4.
+User yang dibuat. Nama di bawah ini adalah saran, boleh diganti asal konsisten.
 
 | Username | Role MBMS | Dipakai untuk |
 | --- | --- | --- |
@@ -118,7 +133,9 @@ Aturan yang berlaku untuk semua role:
 - Role `ADMIN` otomatis lolos semua pemeriksaan role.
 - **Maker-checker** selalu berlaku: pengaju tidak bisa menyetujui dokumennya sendiri, termasuk bila ia ADMIN.
 
-### 4. Daftarkan role di aplikasi
+### 4. Daftarkan role di aplikasi (hanya untuk cara manual)
+
+Bila memakai `create_demo_users.sql`, langkah ini sudah otomatis. Halaman di bawah tetap bisa dipakai untuk menambah atau mengubah role.
 
 1. Login ke MBMS sebagai `MBMS_ADMIN`.
    > **Mode bootstrap:** selama belum ada satu pun user ber-role `ADMIN`, semua user dianggap ADMIN. Ini supaya admin pertama bisa mendaftarkan dirinya sendiri.
