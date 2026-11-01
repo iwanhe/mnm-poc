@@ -115,3 +115,20 @@ Approval engine, penomoran, dan pola package di sini menjadi fondasinya.
 - `tools/apexgen/gen_mbms.py` hanya untuk scaffold baseline. Setelah aplikasi diubah lewat Page Designer, export ulang dari APEX dalam format APEXlang lalu commit. Export itulah sumber kebenaran.
 - `tools/apexgen/check_apx.py` memeriksa struktur (blok, satu properti per baris, referensi `@`). Pemeriksa ini **bukan** pengganti `apex validate`.
 - Supporting objects tidak dipakai. DDL dijalankan terpisah supaya bisa diputar ulang di server kantor lewat SQLcl Projects (K-06).
+
+## 9. Known issue: side menu di layar HP (Universal Theme 26.2.1)
+
+Di layar yang lebih sempit dari breakpoint `lg`, side navigation menu langsung menutup lagi setelah dibuka. Ini terjadi juga di aplikasi wizard/starter app Oracle (Strategic Planner) di instance yang sama.
+
+**Penyebab** (dibuktikan lewat E2E Playwright, run #4–#5):
+
+- `onExpand` tree nav memanggil `delayResize()`.
+- Resize sintetis itu ditangkap `onResize`, yang memanggil `collapse()` bila lebar layar di bawah `lg`.
+
+**Workaround:** `apex-static/mbms-nav-fix.js`, dimuat app-wide sebagai static file `#APP_FILES#js/mbms-nav-fix.js`.
+
+- Selama 800 ms setelah menu dibuka, event resize sintetis pada `window` diabaikan, tapi hanya jika ukuran viewport tidak berubah.
+- Resize sungguhan seperti rotasi layar tetap diproses.
+- Diverifikasi di oracleapex.com: semua varian `+fix` lolos, varian tanpa fix gagal.
+
+Hapus file dan referensinya di `application.apx` (generator: `tools/apexgen/gen_mbms.py`) bila Oracle sudah memperbaiki Universal Theme.
