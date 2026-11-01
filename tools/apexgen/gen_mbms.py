@@ -1199,6 +1199,12 @@ def copy_example0():
         dst = os.path.join(OUT, rel)
         os.makedirs(os.path.dirname(dst), exist_ok=True)
         shutil.copyfile(os.path.join(EXAMPLE0, rel), dst)
+    # example-0 menunjuk ke Universal Theme 26.1; samakan dengan runtime APEX 26.2
+    # (JS theme 26.1 + template 26.2 membuat side menu membuka lalu menutup lagi).
+    theme = os.path.join(OUT, "shared-components", "themes", "universal-theme", "theme.apx")
+    t = open(theme, encoding="utf-8").read()
+    t = t.replace("baseTheme: ut-26.1", "baseTheme: ut-26.2").replace("theme_42/26.1/", "theme_42/26.2/")
+    open(theme, "w", encoding="utf-8").write(t)
     shutil.copytree(os.path.join(EXAMPLE0, "shared-components", "static-files", "icons"),
                     os.path.join(OUT, "shared-components", "static-files", "icons"), dirs_exist_ok=True)
 
