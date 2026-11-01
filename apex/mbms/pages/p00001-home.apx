@@ -152,7 +152,7 @@ page 1 (
             type: pie
         }
         performance {
-            lazyLoading: true
+            lazyLoading: false
         }
         value {
             format: decimal
@@ -204,7 +204,7 @@ page 1 (
             ]
         }
         performance {
-            lazyLoading: true
+            lazyLoading: false
         }
         legend {
             show: false
@@ -269,7 +269,7 @@ page 1 (
             ]
         }
         performance {
-            lazyLoading: true
+            lazyLoading: false
         }
         legend {
             show: true
@@ -359,7 +359,7 @@ page 1 (
             ]
         }
         performance {
-            lazyLoading: true
+            lazyLoading: false
         }
         legend {
             show: true

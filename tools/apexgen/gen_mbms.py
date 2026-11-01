@@ -668,7 +668,7 @@ select (select count(*) from sys_approval_v where status = 'PENDING' and can_act
                     ("layout", G(("sequence", seq), ("slot", "body"), ("startNewRow", False) if not new_row else None)),
                     ("appearance", G(("template", "@/standard"), ("templateOptions", A(["#DEFAULT#", "t-Region--scrollBody"])))),
                     ("chart", G(("type", ctype))) if ctype == "pie" else None,
-                    ("performance", G(("lazyLoading", True))),
+                    ("performance", G(("lazyLoading", False))),  # lazy render saat menu HP dibuka -> resize -> menu tertutup
                     ("value", G(("format", "decimal"), ("decimalPlaces", 0))) if ctype == "pie" else None,
                     ("legend", G(("show", legend))),
                     *ser,
