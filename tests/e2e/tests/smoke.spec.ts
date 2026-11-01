@@ -46,7 +46,7 @@ test.describe('smoke', () => {
         });
       }
     } finally {
-      await diag.attach(testInfo);
+      await diag.attach(testInfo, failures.length > 0);
       await testInfo.attach('smoke-failures.txt', { body: failures.join('\n') || 'OK', contentType: 'text/plain' });
     }
     expect(failures, failures.join('\n')).toEqual([]);

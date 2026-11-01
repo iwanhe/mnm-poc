@@ -34,7 +34,6 @@ jobs:
       APEX_APP_URL: ${{ secrets.APEX_APP_URL }}
       APEX_USERNAME: ${{ secrets.APEX_USERNAME }}
       APEX_PASSWORD: ${{ secrets.APEX_PASSWORD }}
-      APEX_COMPARE_URL: ${{ secrets.APEX_COMPARE_URL }}
     steps:
       - uses: actions/checkout@v4
 
@@ -57,21 +56,6 @@ jobs:
         run: |
           npm install --no-audit --no-fund
           npx playwright install --with-deps chromium
-
-      - name: Dump Universal Theme nav resize logic (diagnostik)
-        continue-on-error: true
-        run: |
-          curl -fsSL -o /tmp/theme42.js "https://static.oracle.com/cdn/apex/26.2.1/themes/theme_42/26.2/js/theme42.js" \
-            || curl -fsSL -o /tmp/theme42.js "https://static.oracle.com/cdn/apex/26.2.1/themes/theme_42/26.2/js/theme42.min.js"
-          node -e '
-            const s = require("fs").readFileSync("/tmp/theme42.js", "utf8");
-            let i = -1, n = 0;
-            while ((i = s.indexOf("onResize", i + 1)) !== -1 && n < 6) {
-              n++;
-              console.log("----- onResize #" + n + " @" + i + " -----");
-              console.log(s.substring(Math.max(0, i - 1500), i + 2500));
-            }
-          '
 
       - name: Run tests
         env:

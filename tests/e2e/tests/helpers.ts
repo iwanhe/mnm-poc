@@ -19,9 +19,12 @@ export function collectDiagnostics(page: Page) {
   });
   return {
     logs,
-    async attach(testInfo: TestInfo) {
+    /** Simpan log ke test-results; cetak ke stdout (log job) hanya bila printToStdout. */
+    async attach(testInfo: TestInfo, printToStdout = false) {
       writeFileSync(testInfo.outputPath('browser-log.txt'), logs.join('\n'));
-      console.log(`\n===== browser-log ${testInfo.project.name} ${testInfo.title} =====\n${logs.join('\n')}\n`);
+      if (printToStdout) {
+        console.log(`\n===== browser-log ${testInfo.project.name} ${testInfo.title} =====\n${logs.join('\n')}\n`);
+      }
       await testInfo.attach('browser-log.txt', { body: logs.join('\n'), contentType: 'text/plain' });
     },
     pageErrors: () => logs.filter((l) => l.includes('[pageerror]')),
