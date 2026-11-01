@@ -9,7 +9,11 @@ import { collectDiagnostics, login, navState, pageUrl } from './helpers';
  * dilampirkan supaya penyebabnya terlihat bila gagal.
  */
 
-const PAGES = [
+// Aplikasi pembanding opsional (mis. Strategic Planner di workspace yang sama), via secret APEX_COMPARE_URL.
+const COMPARE_URL = process.env.APEX_COMPARE_URL;
+
+const PAGES: Array<{ alias: string; no: number; label: string; compare?: boolean }> = [
+  { alias: 'COMPARE', no: 1, label: 'Aplikasi pembanding (home)', compare: true },
   { alias: 'HOME', no: 1, label: 'Dashboard (charts)' },
   { alias: 'CUSTOMERS', no: 12, label: 'Customers (tanpa chart)' },
 ];
@@ -71,10 +75,11 @@ const METHODS = ['click', 'tap'] as const;
 for (const p of PAGES) for (const method of METHODS) {
   test(`side menu tetap terbuka setelah dibuka (${method}) - ${p.label}`, async ({ page, hasTouch }, testInfo) => {
     test.skip(method === 'tap' && !hasTouch, 'tap hanya untuk device dengan touch');
+    test.skip(!!p.compare && !COMPARE_URL, 'APEX_COMPARE_URL tidak di-set');
     const diag = collectDiagnostics(page);
     try {
-      await login(page);
-      if (p.alias !== 'HOME') {
+      await login(page, p.compare ? COMPARE_URL : undefined);
+      if (!p.compare && p.alias !== 'HOME') {
         await page.goto(pageUrl(page.url(), p.alias, p.no));
       }
       // APEX menjaga koneksi tetap terbuka, jadi 'networkidle' tidak pernah tercapai.

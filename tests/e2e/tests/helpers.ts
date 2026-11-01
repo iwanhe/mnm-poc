@@ -29,8 +29,8 @@ export function collectDiagnostics(page: Page) {
 }
 
 /** Login lewat halaman login APEX (P9999_USERNAME / P9999_PASSWORD). */
-export async function login(page: Page) {
-  await page.goto(env('APEX_APP_URL'));
+export async function login(page: Page, url = env('APEX_APP_URL')) {
+  await page.goto(url);
   const user = page.locator('#P9999_USERNAME');
   if (await user.isVisible().catch(() => false)) {
     await user.fill(env('APEX_USERNAME'));

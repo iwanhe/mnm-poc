@@ -4,7 +4,7 @@ Test end-to-end terhadap aplikasi MBMS yang sudah di-import di oracleapex.com.
 
 | Test | Isi |
 | --- | --- |
-| `nav-menu.spec.ts` | Buka side menu lewat hamburger, tunggu 3 detik, pastikan menu masih terbuka (Dashboard dan Customers). Menyimpan `nav-timeline.json`: class body, resize, event `theme42layoutchanged`, klik. |
+| `nav-menu.spec.ts` | (opsional: juga aplikasi pembanding via secret `APEX_COMPARE_URL`) Buka side menu lewat hamburger, tunggu 3 detik, pastikan menu masih terbuka (Dashboard dan Customers). Menyimpan `nav-timeline.json`: class body, resize, event `theme42layoutchanged`, klik. |
 | `smoke.spec.ts` | Desktop: 15 halaman utama terbuka tanpa `ORA-`, tanpa error JS, tidak terlempar ke login. |
 
 Project: `mobile-chrome` (Pixel 7), `mobile-iphone-viewport` (viewport iPhone 13, Chromium), `desktop-chrome`.
