@@ -100,6 +100,11 @@ list navigation-menu (
         layout {
             sequence: 30
         }
+        link {
+            target: {
+                page: 20
+            }
+        }
     )
 
     entry job-orders (
@@ -141,6 +146,11 @@ list navigation-menu (
         }
         layout {
             sequence: 60
+        }
+        link {
+            target: {
+                page: 30
+            }
         }
     )
 
@@ -200,6 +210,11 @@ list navigation-menu (
         layout {
             sequence: 100
         }
+        link {
+            target: {
+                page: 40
+            }
+        }
     )
 
     entry purchase-requisitions (
@@ -242,6 +257,11 @@ list navigation-menu (
         layout {
             sequence: 130
         }
+        link {
+            target: {
+                page: 50
+            }
+        }
     )
 
     entry stock-transactions (
@@ -283,6 +303,11 @@ list navigation-menu (
         }
         layout {
             sequence: 160
+        }
+        link {
+            target: {
+                page: 10
+            }
         }
     )
 
@@ -373,6 +398,11 @@ list navigation-menu (
         }
         layout {
             sequence: 220
+        }
+        link {
+            target: {
+                page: 90
+            }
         }
         security {
             authorizationScheme: @admin-rights

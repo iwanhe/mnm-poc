@@ -520,7 +520,12 @@ NAV = [
 
 def nav_menu():
     entries = []
+    first_child = {}
+    for ident, _l, _i, page, parent, _a in NAV:
+        if parent and parent not in first_child:
+            first_child[parent] = page
     for i, (ident, label, icon, page, parent, auth) in enumerate(NAV):
+        page = page or first_child.get(ident)
         m = [("label", label), ("icon", G(("imageIconCssClasses", icon))),
              ("layout", G(("sequence", (i + 1) * 10), ("parentEntry", "@" + parent) if parent else None))]
         if page:
@@ -596,9 +601,7 @@ def application():
                 ("logo", G(("type", "text"), ("text", "MBMS"))),
                 ("navigation", G(("homeUrl", O(("page", 1))), ("loginUrl", O(("page", "LOGIN"))))),
                 ("navigationMenu", G(("listTemplate", "@/side-navigation-menu"),
-                                     # Tanpa #DEFAULT#: default template ini = js-defaultCollapsed (menu
-                                     # selalu tertutup lagi di setiap page load). Collapse = tampil ikon.
-                                     ("templateOptions", A(["t-TreeNav--styleA", "js-navCollapsed--default"])),
+                                     ("templateOptions", A(["#DEFAULT#", "t-TreeNav--styleA", "js-navCollapsed--hidden"])),
                                      ("list", "@navigation-menu"))),
                 ("navigationBar", G(("list", "@navigation-bar"), ("listTemplate", "@/navigation-bar"),
                                     ("templateOptions", "#DEFAULT#"))),
@@ -608,7 +611,7 @@ def application():
                 ("authentication", G(("scheme", "@oracle-apex-accounts"))),
                 ("sessionStateProtection", G(("checksumSalt",
                                               "6D4B2F0A9C1E47B8A3D5F7091C2E4B6D8F0A1C3E5B7D9F1A3C5E7B9D1F3A5C7E"))),
-                ("runtime", G(("allowFeedback", False), ("compatibilityMode", "24.2"))))
+                ("runtime", G(("allowFeedback", False))))
 
 
 def page_groups():

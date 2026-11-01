@@ -15,8 +15,9 @@ app MBMS (
     navigationMenu {
         listTemplate: @/side-navigation-menu
         templateOptions: [
+            #DEFAULT#
             t-TreeNav--styleA
-            js-navCollapsed--default
+            js-navCollapsed--hidden
         ]
         list: @navigation-menu
     }
@@ -43,6 +44,5 @@ app MBMS (
     }
     runtime {
         allowFeedback: false
-        compatibilityMode: 24.2
     }
 )
