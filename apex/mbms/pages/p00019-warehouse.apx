@@ -368,6 +368,9 @@ page 19 (
             sequence: 10
             point: beforeHeader
         }
+        advanced {
+            executionMappingIdentifier: 900019001
+        }
     )
 
     process process-form (
@@ -376,6 +379,9 @@ page 19 (
         formRegion: @warehouse
         execution {
             sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 900019002
         }
     )
 
@@ -391,6 +397,9 @@ page 19 (
         serverSideCondition {
             type: requestIsContainedInValue
             value: DELETE,SAVE,CREATE
+        }
+        advanced {
+            executionMappingIdentifier: 900019003
         }
     )
 

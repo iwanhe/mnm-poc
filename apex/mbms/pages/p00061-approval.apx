@@ -419,6 +419,9 @@ page 61 (
             sequence: 10
             point: beforeHeader
         }
+        advanced {
+            executionMappingIdentifier: 900061001
+        }
     )
 
     process approve (
@@ -438,6 +441,9 @@ page 61 (
         }
         serverSideCondition {
             whenButtonPressed: @approve
+        }
+        advanced {
+            executionMappingIdentifier: 900061002
         }
     )
 
@@ -459,6 +465,9 @@ page 61 (
         serverSideCondition {
             whenButtonPressed: @reject
         }
+        advanced {
+            executionMappingIdentifier: 900061003
+        }
     )
 
     process close-dialog (
@@ -473,6 +482,9 @@ page 61 (
         serverSideCondition {
             type: requestIsContainedInValue
             value: APPROVE,REJECT
+        }
+        advanced {
+            executionMappingIdentifier: 900061004
         }
     )
 

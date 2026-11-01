@@ -390,7 +390,16 @@ def form_page(num, name, alias, group, region_id, table, pk, pk_dtype, items, op
     return Comp("page", str(num), *page_members)
 
 
+def _add_mapping_ids(comp, num):
+    n = 0
+    for m in comp.members:
+        if isinstance(m, Comp) and m.kind == "process":
+            n += 1
+            m.members.append(("advanced", G(("executionMappingIdentifier", "%d%05d%03d" % (9, num, n)))))
+
+
 def pagefile(num, alias, comp):
+    _add_mapping_ids(comp, num)
     put("pages/p%05d-%s.apx" % (num, alias.lower().replace("_", "-")), render(comp))
 
 
@@ -399,7 +408,7 @@ def pagefile(num, alias, comp):
 # =============================================================================
 def sql_lov(ident, name, sql):
     return Comp("lov", ident,
-                ("name", name),
+                ("name", name.upper()),
                 ("source", G(("type", "sqlQuery"), ("sqlQuery", ML("sql", sql)))),
                 ("columnMapping", G(("return", "R"), ("display", "D"))))
 
@@ -409,7 +418,7 @@ def static_lov(ident, name, values):
     for i, (ret, disp) in enumerate(values):
         entries.append(Comp("entry", ret.lower().replace("_", "-"),
                             ("sequence", (i + 1) * 10), ("display", disp), ("return", ret)))
-    return Comp("lov", ident, ("name", name), ("source", G(("location", "staticValues"))), *entries)
+    return Comp("lov", ident, ("name", name.upper()), ("source", G(("location", "staticValues"))), *entries)
 
 
 LOVS = [
@@ -654,11 +663,16 @@ select (select count(*) from sys_approval_v where status = 'PENDING' and can_act
                     ("type", "chart"),
                     ("layout", G(("sequence", seq), ("slot", "body"), ("startNewRow", False) if not new_row else None)),
                     ("appearance", G(("template", "@/standard"), ("templateOptions", A(["#DEFAULT#", "t-Region--scrollBody"])))),
-                    ("chart", G(("type", ctype))),
+                    ("chart", G(("type", ctype))) if ctype == "pie" else None,
                     ("performance", G(("lazyLoading", True))),
-                    ("value", G(("format", "decimal"), ("decimalPlaces", 0))),
+                    ("value", G(("format", "decimal"), ("decimalPlaces", 0))) if ctype == "pie" else None,
                     ("legend", G(("show", legend))),
-                    *ser)
+                    *ser,
+                    *([] if ctype == "pie" else [
+                        Comp("axis", "x", ("name", "x"), ("majorTicks", G(("show", "auto")))),
+                        Comp("axis", "y", ("name", "y"),
+                             ("value", G(("format", "decimal"), ("decimalPlaces", 0))),
+                             ("majorTicks", G(("show", "auto"))))]))
 
     home = Comp("page", "1",
                 ("name", "Dashboard"),

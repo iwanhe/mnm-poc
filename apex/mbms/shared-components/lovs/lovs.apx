@@ -71,7 +71,7 @@ lov warehouses (
 )
 
 lov open-jobs (
-    name: PRT_JOB_ORDER (approved)
+    name: PRT_JOB_ORDER (APPROVED)
     source {
         type: sqlQuery
         sqlQuery:
@@ -89,7 +89,7 @@ lov open-jobs (
 )
 
 lov open-projects (
-    name: PRJ_PROJECT (approved)
+    name: PRJ_PROJECT (APPROVED)
     source {
         type: sqlQuery
         sqlQuery:
@@ -107,7 +107,7 @@ lov open-projects (
 )
 
 lov draft-projects (
-    name: PRJ_PROJECT (draft)
+    name: PRJ_PROJECT (DRAFT)
     source {
         type: sqlQuery
         sqlQuery:
@@ -125,7 +125,7 @@ lov draft-projects (
 )
 
 lov editable-prs (
-    name: PUR_REQUISITION (draft)
+    name: PUR_REQUISITION (DRAFT)
     source {
         type: sqlQuery
         sqlQuery:

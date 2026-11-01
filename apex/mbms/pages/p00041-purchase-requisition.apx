@@ -576,6 +576,9 @@ page 41 (
             sequence: 10
             point: beforeHeader
         }
+        advanced {
+            executionMappingIdentifier: 900041001
+        }
     )
 
     process process-form (
@@ -584,6 +587,9 @@ page 41 (
         formRegion: @purchase-requisition
         execution {
             sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 900041002
         }
     )
 
@@ -605,6 +611,9 @@ page 41 (
         serverSideCondition {
             whenButtonPressed: @submit
         }
+        advanced {
+            executionMappingIdentifier: 900041003
+        }
     )
 
     process close-dialog (
@@ -619,6 +628,9 @@ page 41 (
         serverSideCondition {
             type: requestIsContainedInValue
             value: DELETE,SAVE,CREATE,SUBMIT
+        }
+        advanced {
+            executionMappingIdentifier: 900041004
         }
     )
 

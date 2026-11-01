@@ -555,6 +555,9 @@ page 51 (
             sequence: 10
             point: beforeHeader
         }
+        advanced {
+            executionMappingIdentifier: 900051001
+        }
     )
 
     process process-form (
@@ -563,6 +566,9 @@ page 51 (
         formRegion: @stock-transaction
         execution {
             sequence: 10
+        }
+        advanced {
+            executionMappingIdentifier: 900051002
         }
     )
 
@@ -578,6 +584,9 @@ page 51 (
         serverSideCondition {
             type: requestIsContainedInValue
             value: CREATE
+        }
+        advanced {
+            executionMappingIdentifier: 900051003
         }
     )
 

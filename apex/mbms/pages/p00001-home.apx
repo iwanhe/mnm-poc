@@ -203,15 +203,8 @@ page 1 (
                 t-Region--scrollBody
             ]
         }
-        chart {
-            type: bar
-        }
         performance {
             lazyLoading: true
-        }
-        value {
-            format: decimal
-            decimalPlaces: 0
         }
         legend {
             show: false
@@ -241,6 +234,24 @@ page 1 (
             }
         )
 
+        axis x (
+            name: x
+            majorTicks {
+                show: auto
+            }
+        )
+
+        axis y (
+            name: y
+            value {
+                format: decimal
+                decimalPlaces: 0
+            }
+            majorTicks {
+                show: auto
+            }
+        )
+
     )
 
     region project-budget (
@@ -257,15 +268,8 @@ page 1 (
                 t-Region--scrollBody
             ]
         }
-        chart {
-            type: bar
-        }
         performance {
             lazyLoading: true
-        }
-        value {
-            format: decimal
-            decimalPlaces: 0
         }
         legend {
             show: true
@@ -319,6 +323,24 @@ page 1 (
             }
         )
 
+        axis x (
+            name: x
+            majorTicks {
+                show: auto
+            }
+        )
+
+        axis y (
+            name: y
+            value {
+                format: decimal
+                decimalPlaces: 0
+            }
+            majorTicks {
+                show: auto
+            }
+        )
+
     )
 
     region job-hpp (
@@ -336,15 +358,8 @@ page 1 (
                 t-Region--scrollBody
             ]
         }
-        chart {
-            type: bar
-        }
         performance {
             lazyLoading: true
-        }
-        value {
-            format: decimal
-            decimalPlaces: 0
         }
         legend {
             show: true
@@ -395,6 +410,24 @@ page 1 (
             }
             performance {
                 maxRowsToProcess: 50
+            }
+        )
+
+        axis x (
+            name: x
+            majorTicks {
+                show: auto
+            }
+        )
+
+        axis y (
+            name: y
+            value {
+                format: decimal
+                decimalPlaces: 0
+            }
+            majorTicks {
+                show: auto
             }
         )
 
