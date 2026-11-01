@@ -1,0 +1,289 @@
+breadcrumb breadcrumb (
+    name: Breadcrumb
+
+    entry home (
+        name: Home
+        pageNumber: 1
+        execution {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
+            }
+        }
+    )
+
+    entry approvals (
+        name: Approval Inbox
+        pageNumber: 60
+        execution {
+            sequence: 20
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 60
+            }
+        }
+    )
+
+    entry job-orders (
+        name: Job Orders
+        pageNumber: 20
+        execution {
+            sequence: 30
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 20
+            }
+        }
+    )
+
+    entry job-costing (
+        name: Job Costing (HPP)
+        pageNumber: 22
+        execution {
+            sequence: 40
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 22
+            }
+        }
+    )
+
+    entry projects (
+        name: Projects
+        pageNumber: 30
+        execution {
+            sequence: 50
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 30
+            }
+        }
+    )
+
+    entry wbs-budget (
+        name: WBS & Budget vs Actual
+        pageNumber: 32
+        execution {
+            sequence: 60
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 32
+            }
+        }
+    )
+
+    entry project-summary (
+        name: Project Summary
+        pageNumber: 34
+        execution {
+            sequence: 70
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 34
+            }
+        }
+    )
+
+    entry purchase-requisitions (
+        name: Purchase Requisitions
+        pageNumber: 40
+        execution {
+            sequence: 80
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 40
+            }
+        }
+    )
+
+    entry pr-lines (
+        name: PR Lines
+        pageNumber: 42
+        execution {
+            sequence: 90
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 42
+            }
+        }
+    )
+
+    entry stock-transactions (
+        name: Stock Transactions
+        pageNumber: 50
+        execution {
+            sequence: 100
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 50
+            }
+        }
+    )
+
+    entry stock-on-hand (
+        name: Stock On Hand
+        pageNumber: 52
+        execution {
+            sequence: 110
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 52
+            }
+        }
+    )
+
+    entry business-units (
+        name: Business Units
+        pageNumber: 10
+        execution {
+            sequence: 120
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 10
+            }
+        }
+    )
+
+    entry customers (
+        name: Customers
+        pageNumber: 12
+        execution {
+            sequence: 130
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 12
+            }
+        }
+    )
+
+    entry vendors (
+        name: Vendors
+        pageNumber: 14
+        execution {
+            sequence: 140
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 14
+            }
+        }
+    )
+
+    entry items (
+        name: Items
+        pageNumber: 16
+        execution {
+            sequence: 150
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 16
+            }
+        }
+    )
+
+    entry warehouses (
+        name: Warehouses & Locations
+        pageNumber: 18
+        execution {
+            sequence: 160
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 18
+            }
+        }
+    )
+
+    entry users-roles (
+        name: Users & Roles
+        pageNumber: 90
+        execution {
+            sequence: 170
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 90
+            }
+        }
+    )
+
+    entry doc-types (
+        name: Document Types & Approval
+        pageNumber: 92
+        execution {
+            sequence: 180
+        }
+        appearance {
+            parentEntry: @home
+        }
+        link {
+            target: {
+                page: 92
+            }
+        }
+    )
+
+)

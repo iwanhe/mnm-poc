@@ -1,0 +1,1126 @@
+page 21 (
+    name: Job Order
+    alias: JOB-ORDER
+    title: Job Order
+    pageGroup: @printing
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+        resizable: true
+    }
+    security {
+        authorizationScheme: @printing-rights
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region job-order (
+        name: Job Order
+        type: form
+        source {
+            location: localDatabase
+            tableName: PRT_JOB_ORDER
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    pageItem P21_JOB_ID (
+        type: hidden
+        layout {
+            sequence: 5
+            region: @job-order
+            slot: regionBody
+        }
+        source {
+            formRegion: @job-order
+            column: JOB_ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P21_JOB_NO (
+        type: displayOnly
+        label {
+            label: No. Job Order
+            alignment: right
+        }
+        settings {
+            sendOnPageSubmit: false
+        }
+        layout {
+            sequence: 10
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @job-order
+            column: JOB_NO
+            dataType: varchar2
+            queryOnly: true
+        }
+    )
+
+    pageItem P21_STATUS (
+        type: selectList
+        label {
+            label: Status
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @doc-status
+            displayExtraValues: true
+            displayNullValue: true
+            nullDisplayValue: - Pilih -
+        }
+        layout {
+            sequence: 20
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @job-order
+            column: STATUS
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: DRAFT
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: nvl(:P21_STATUS,'DRAFT') not in ('APPROVED','IN_PROGRESS','COMPLETED')
+        }
+        help {
+            inlineHelpText: Setelah approved: ubah ke IN_PROGRESS / COMPLETED / CLOSED. Status hanya berubah lewat Submit for Approval / Approval Inbox.
+        }
+    )
+
+    pageItem P21_BU_ID (
+        type: hidden
+        layout {
+            sequence: 30
+            region: @job-order
+            slot: regionBody
+        }
+        source {
+            formRegion: @job-order
+            column: BU_ID
+            dataType: number
+        }
+        default {
+            type: sqlQuerySingleValue
+            sqlQuerySingleValue: select bu_id from mdm_business_unit where bu_code = 'PRT'
+        }
+    )
+
+    pageItem P21_JOB_TYPE (
+        type: selectList
+        label {
+            label: Tipe Produksi (D-02)
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @job-types
+            displayExtraValues: true
+            displayNullValue: true
+            nullDisplayValue: - Pilih -
+        }
+        layout {
+            sequence: 40
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @job-order
+            column: JOB_TYPE
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: MTO
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: not (nvl(:P21_STATUS,'DRAFT') in ('DRAFT','REJECTED'))
+        }
+    )
+
+    pageItem P21_CUSTOMER_ID (
+        type: selectList
+        label {
+            label: Customer
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @customers
+            displayExtraValues: true
+            displayNullValue: true
+            nullDisplayValue: - Pilih -
+        }
+        layout {
+            sequence: 50
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @job-order
+            column: CUSTOMER_ID
+            dataType: number
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: not (nvl(:P21_STATUS,'DRAFT') in ('DRAFT','REJECTED'))
+        }
+        help {
+            inlineHelpText: Wajib untuk Make to Order.
+        }
+    )
+
+    pageItem P21_PRODUCT_DESC (
+        type: textarea
+        label {
+            label: Produk / Spesifikasi
+            alignment: right
+        }
+        layout {
+            sequence: 60
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 60
+            height: 3
+        }
+        validation {
+            valueRequired: true
+            maxLength: 500
+        }
+        source {
+            formRegion: @job-order
+            column: PRODUCT_DESC
+            dataType: varchar2
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: not (nvl(:P21_STATUS,'DRAFT') in ('DRAFT','REJECTED'))
+        }
+    )
+
+    pageItem P21_QTY_ORDER (
+        type: numberField
+        label {
+            label: Qty Order
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 1
+        }
+        layout {
+            sequence: 70
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @job-order
+            column: QTY_ORDER
+            dataType: number
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: not (nvl(:P21_STATUS,'DRAFT') in ('DRAFT','REJECTED'))
+        }
+    )
+
+    pageItem P21_UPS_PER_SHEET (
+        type: numberField
+        label {
+            label: Imposition (up per lembar)
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 1
+        }
+        layout {
+            sequence: 80
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @job-order
+            column: UPS_PER_SHEET
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 1
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: not (nvl(:P21_STATUS,'DRAFT') in ('DRAFT','REJECTED'))
+        }
+    )
+
+    pageItem P21_INSHEET_PCT (
+        type: numberField
+        label {
+            label: Toleransi Insheet (%)
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+            maxValue: 100
+        }
+        layout {
+            sequence: 90
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @job-order
+            column: INSHEET_PCT
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 5
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: not (nvl(:P21_STATUS,'DRAFT') in ('DRAFT','REJECTED'))
+        }
+    )
+
+    pageItem P21_DUE_DATE (
+        type: datePicker
+        label {
+            label: Due Date
+            alignment: right
+        }
+        layout {
+            sequence: 100
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @job-order
+            column: DUE_DATE
+            dataType: date
+        }
+    )
+
+    pageItem P21_SELLING_PRICE (
+        type: numberField
+        label {
+            label: Harga Jual
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+        }
+        layout {
+            sequence: 110
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @job-order
+            column: SELLING_PRICE
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 0
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: not (nvl(:P21_STATUS,'DRAFT') in ('DRAFT','REJECTED'))
+        }
+    )
+
+    pageItem P21_EST_PAPER (
+        type: numberField
+        label {
+            label: Est. Kertas
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+        }
+        layout {
+            sequence: 120
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @job-order
+            column: EST_PAPER
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 0
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: not (nvl(:P21_STATUS,'DRAFT') in ('DRAFT','REJECTED'))
+        }
+    )
+
+    pageItem P21_EST_INK (
+        type: numberField
+        label {
+            label: Est. Tinta
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+        }
+        layout {
+            sequence: 130
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @job-order
+            column: EST_INK
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 0
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: not (nvl(:P21_STATUS,'DRAFT') in ('DRAFT','REJECTED'))
+        }
+    )
+
+    pageItem P21_EST_PLATE (
+        type: numberField
+        label {
+            label: Est. Plat
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+        }
+        layout {
+            sequence: 140
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @job-order
+            column: EST_PLATE
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 0
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: not (nvl(:P21_STATUS,'DRAFT') in ('DRAFT','REJECTED'))
+        }
+    )
+
+    pageItem P21_EST_MACHINE (
+        type: numberField
+        label {
+            label: Est. Proses Mesin
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+        }
+        layout {
+            sequence: 150
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @job-order
+            column: EST_MACHINE
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 0
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: not (nvl(:P21_STATUS,'DRAFT') in ('DRAFT','REJECTED'))
+        }
+    )
+
+    pageItem P21_EST_FINISHING (
+        type: numberField
+        label {
+            label: Est. Finishing (internal/subkon)
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+        }
+        layout {
+            sequence: 160
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @job-order
+            column: EST_FINISHING
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 0
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: not (nvl(:P21_STATUS,'DRAFT') in ('DRAFT','REJECTED'))
+        }
+    )
+
+    pageItem P21_EST_LABOR (
+        type: numberField
+        label {
+            label: Est. Tenaga Kerja
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+        }
+        layout {
+            sequence: 170
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @job-order
+            column: EST_LABOR
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 0
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: not (nvl(:P21_STATUS,'DRAFT') in ('DRAFT','REJECTED'))
+        }
+    )
+
+    pageItem P21_EST_OVERHEAD (
+        type: numberField
+        label {
+            label: Est. Overhead
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+        }
+        layout {
+            sequence: 180
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @job-order
+            column: EST_OVERHEAD
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 0
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: not (nvl(:P21_STATUS,'DRAFT') in ('DRAFT','REJECTED'))
+        }
+    )
+
+    pageItem P21_EST_HPP (
+        type: displayOnly
+        label {
+            label: Total Est. HPP
+            alignment: right
+        }
+        settings {
+            sendOnPageSubmit: false
+        }
+        layout {
+            sequence: 190
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @job-order
+            column: EST_HPP
+            dataType: number
+            queryOnly: true
+        }
+    )
+
+    pageItem P21_QTY_PRODUCED (
+        type: numberField
+        label {
+            label: Qty Produced
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+        }
+        layout {
+            sequence: 200
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @job-order
+            column: QTY_PRODUCED
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 0
+        }
+    )
+
+    pageItem P21_QTY_REJECT (
+        type: numberField
+        label {
+            label: Qty Reject / Waste
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+        }
+        layout {
+            sequence: 210
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @job-order
+            column: QTY_REJECT
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 0
+        }
+    )
+
+    pageItem P21_QTY_DELIVERED (
+        type: numberField
+        label {
+            label: Qty Delivered
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+        }
+        layout {
+            sequence: 220
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @job-order
+            column: QTY_DELIVERED
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 0
+        }
+    )
+
+    pageItem P21_ACT_OTHER_COST (
+        type: numberField
+        label {
+            label: Biaya Aktual Lain (mesin, labor, subkon, overhead)
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+        }
+        layout {
+            sequence: 230
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @job-order
+            column: ACT_OTHER_COST
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 0
+        }
+        help {
+            inlineHelpText: Material aktual dihitung otomatis dari Material Issue. Detail labor/mesin/subkon menyusul di Fase 2.
+        }
+    )
+
+    pageItem P21_NOTES (
+        type: textarea
+        label {
+            label: Catatan
+            alignment: right
+        }
+        layout {
+            sequence: 240
+            region: @job-order
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+            height: 3
+        }
+        validation {
+            maxLength: 1000
+        }
+        source {
+            formRegion: @job-order
+            column: NOTES
+            dataType: varchar2
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: definedByDynamicAction
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: Delete
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: [
+                #DEFAULT#
+                t-Button--danger
+                t-Button--simple
+            ]
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: :P21_JOB_ID is not null and nvl(:P21_STATUS,'DRAFT') = 'DRAFT'
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Apply Changes
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: :P21_JOB_ID is not null and nvl(:P21_STATUS,'DRAFT') not in ('SUBMITTED','CLOSED','CANCELLED')
+        }
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Create
+        layout {
+            sequence: 40
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: :P21_JOB_ID is null
+        }
+    )
+
+    button submit (
+        buttonName: SUBMIT
+        label: Submit for Approval
+        layout {
+            sequence: 50
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: Ajukan dokumen ini untuk approval? Setelah diajukan dokumen terkunci.
+            style: information
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: :P21_JOB_ID is not null and nvl(:P21_STATUS,'DRAFT') in ('DRAFT','REJECTED')
+        }
+    )
+
+    dynamicAction cancel-dialog (
+        name: Cancel Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    validation customer-required-for-mto (
+        name: Customer wajib untuk MTO
+        execution {
+            sequence: 10
+        }
+        validation {
+            type: expression
+            plsqlExpression: :P21_JOB_TYPE = 'STOCK' or :P21_CUSTOMER_ID is not null
+        }
+        error {
+            errorMessage: Customer wajib diisi untuk job Make to Order.
+            displayLocation: inlineWithFieldAndInNotification
+            associatedItem: @P21_CUSTOMER_ID
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE,SAVE,SUBMIT
+        }
+    )
+
+    process initialize-form (
+        name: Initialize form Job Order
+        type: formInitialization
+        formRegion: @job-order
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+    )
+
+    process process-form (
+        name: Process form Job Order
+        type: formAutoRowProcessing
+        formRegion: @job-order
+        execution {
+            sequence: 10
+        }
+    )
+
+    process submit-for-approval (
+        name: Submit for Approval
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                mbms_approval.submit(p_doc_type => 'JO', p_doc_id => :P21_JOB_ID);
+                ```
+        }
+        execution {
+            sequence: 20
+        }
+        successMessage {
+            successMessage: Dokumen diajukan untuk approval.
+        }
+        serverSideCondition {
+            whenButtonPressed: @submit
+        }
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        settings {
+            showSuccessMessages: true
+        }
+        execution {
+            sequence: 50
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: DELETE,SAVE,CREATE,SUBMIT
+        }
+    )
+
+)

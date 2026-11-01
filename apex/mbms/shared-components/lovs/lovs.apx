@@ -1,0 +1,486 @@
+lov business-units (
+    name: MDM_BUSINESS_UNIT
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select bu_code || ' - ' || bu_name d, bu_id r
+              from mdm_business_unit
+             where active_yn = 'Y'
+             order by bu_code
+            ```
+    }
+    columnMapping {
+        return: R
+        display: D
+    }
+)
+
+lov customers (
+    name: MDM_CUSTOMER
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select customer_code || ' - ' || customer_name d, customer_id r
+              from mdm_customer
+             where active_yn = 'Y'
+             order by customer_name
+            ```
+    }
+    columnMapping {
+        return: R
+        display: D
+    }
+)
+
+lov items (
+    name: MDM_ITEM
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select item_code || ' - ' || item_name || ' (' || uom || ')' d, item_id r
+              from mdm_item
+             where active_yn = 'Y'
+             order by item_code
+            ```
+    }
+    columnMapping {
+        return: R
+        display: D
+    }
+)
+
+lov warehouses (
+    name: MDM_WAREHOUSE
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select w.wh_code || ' - ' || w.wh_name d, w.warehouse_id r
+              from mdm_warehouse w
+             where w.active_yn = 'Y'
+             order by w.wh_code
+            ```
+    }
+    columnMapping {
+        return: R
+        display: D
+    }
+)
+
+lov open-jobs (
+    name: PRT_JOB_ORDER (approved)
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select job_no || ' - ' || substr(product_desc, 1, 60) d, job_id r
+              from prt_job_order
+             where status in ('APPROVED','IN_PROGRESS','COMPLETED')
+             order by job_no desc
+            ```
+    }
+    columnMapping {
+        return: R
+        display: D
+    }
+)
+
+lov open-projects (
+    name: PRJ_PROJECT (approved)
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select project_no || ' - ' || project_name d, project_id r
+              from prj_project
+             where status in ('APPROVED','IN_PROGRESS','COMPLETED')
+             order by project_no desc
+            ```
+    }
+    columnMapping {
+        return: R
+        display: D
+    }
+)
+
+lov draft-projects (
+    name: PRJ_PROJECT (draft)
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select project_no || ' - ' || project_name d, project_id r
+              from prj_project
+             where status in ('DRAFT','REJECTED')
+             order by project_no desc
+            ```
+    }
+    columnMapping {
+        return: R
+        display: D
+    }
+)
+
+lov editable-prs (
+    name: PUR_REQUISITION (draft)
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select pr_no || ' - ' || substr(description, 1, 60) d, pr_id r
+              from pur_requisition
+             where status in ('DRAFT','REJECTED')
+             order by pr_no desc
+            ```
+    }
+    columnMapping {
+        return: R
+        display: D
+    }
+)
+
+lov roles (
+    name: SYS_ROLE
+    source {
+        type: sqlQuery
+        sqlQuery:
+            ```sql
+            select role_code || ' - ' || role_name d, role_code r
+              from sys_role
+             order by role_code
+            ```
+    }
+    columnMapping {
+        return: R
+        display: D
+    }
+)
+
+lov doc-status (
+    name: DOC_STATUS
+    source {
+        location: staticValues
+    }
+
+    entry draft (
+        sequence: 10
+        display: Draft
+        return: DRAFT
+    )
+
+    entry submitted (
+        sequence: 20
+        display: Submitted
+        return: SUBMITTED
+    )
+
+    entry approved (
+        sequence: 30
+        display: Approved
+        return: APPROVED
+    )
+
+    entry rejected (
+        sequence: 40
+        display: Rejected
+        return: REJECTED
+    )
+
+    entry in-progress (
+        sequence: 50
+        display: In Progress
+        return: IN_PROGRESS
+    )
+
+    entry completed (
+        sequence: 60
+        display: Completed
+        return: COMPLETED
+    )
+
+    entry closed (
+        sequence: 70
+        display: Closed
+        return: CLOSED
+    )
+
+    entry cancelled (
+        sequence: 80
+        display: Cancelled
+        return: CANCELLED
+    )
+
+)
+
+lov job-types (
+    name: JOB_TYPE
+    source {
+        location: staticValues
+    }
+
+    entry mto (
+        sequence: 10
+        display: Make to Order (Sales Order)
+        return: MTO
+    )
+
+    entry stock (
+        sequence: 20
+        display: Produksi untuk Stok
+        return: STOCK
+    )
+
+)
+
+lov project-types (
+    name: PROJECT_TYPE
+    source {
+        location: staticValues
+    }
+
+    entry fabrication (
+        sequence: 10
+        display: Fabrikasi
+        return: FABRICATION
+    )
+
+    entry installation (
+        sequence: 20
+        display: Instalasi
+        return: INSTALLATION
+    )
+
+    entry maintenance (
+        sequence: 30
+        display: Maintenance Service
+        return: MAINTENANCE
+    )
+
+)
+
+lov item-categories (
+    name: ITEM_CATEGORY
+    source {
+        location: staticValues
+    }
+
+    entry raw (
+        sequence: 10
+        display: Raw Material
+        return: RAW
+    )
+
+    entry consumable (
+        sequence: 20
+        display: Consumables
+        return: CONSUMABLE
+    )
+
+    entry spare-part (
+        sequence: 30
+        display: Spare Part
+        return: SPARE_PART
+    )
+
+    entry finished-good (
+        sequence: 40
+        display: Finished Goods
+        return: FINISHED_GOOD
+    )
+
+    entry plate (
+        sequence: 50
+        display: Plat Cetak (repeat order)
+        return: PLATE
+    )
+
+    entry service (
+        sequence: 60
+        display: Jasa
+        return: SERVICE
+    )
+
+)
+
+lov vendor-types (
+    name: VENDOR_TYPE
+    source {
+        location: staticValues
+    }
+
+    entry goods (
+        sequence: 10
+        display: Barang
+        return: GOODS
+    )
+
+    entry subcon (
+        sequence: 20
+        display: Subkontraktor
+        return: SUBCON
+    )
+
+    entry service (
+        sequence: 30
+        display: Jasa
+        return: SERVICE
+    )
+
+)
+
+lov location-types (
+    name: LOCATION_TYPE
+    source {
+        location: staticValues
+    }
+
+    entry main (
+        sequence: 10
+        display: Gudang Utama
+        return: MAIN
+    )
+
+    entry site (
+        sequence: 20
+        display: Site Proyek
+        return: SITE
+    )
+
+    entry vendor (
+        sequence: 30
+        display: Lokasi Vendor Subkon
+        return: VENDOR
+    )
+
+)
+
+lov txn-types (
+    name: TXN_TYPE
+    source {
+        location: staticValues
+    }
+
+    entry receipt (
+        sequence: 10
+        display: Goods Receipt (masuk)
+        return: RECEIPT
+    )
+
+    entry issue (
+        sequence: 20
+        display: Material Issue ke Job/Proyek
+        return: ISSUE
+    )
+
+    entry return (
+        sequence: 30
+        display: Material Return dari Job/Proyek
+        return: RETURN
+    )
+
+    entry adj-in (
+        sequence: 40
+        display: Adjustment (+)
+        return: ADJ_IN
+    )
+
+    entry adj-out (
+        sequence: 50
+        display: Adjustment (-)
+        return: ADJ_OUT
+    )
+
+)
+
+lov pr-purposes (
+    name: PR_PURPOSE
+    source {
+        location: staticValues
+    }
+
+    entry stock (
+        sequence: 10
+        display: Stock Replenishment
+        return: STOCK
+    )
+
+    entry job (
+        sequence: 20
+        display: Printing Job Order
+        return: JOB
+    )
+
+    entry project (
+        sequence: 30
+        display: Engineering Project
+        return: PROJECT
+    )
+
+)
+
+lov cost-categories (
+    name: COST_CATEGORY
+    source {
+        location: staticValues
+    }
+
+    entry material (
+        sequence: 10
+        display: Material
+        return: MATERIAL
+    )
+
+    entry labor (
+        sequence: 20
+        display: Labor
+        return: LABOR
+    )
+
+    entry equipment (
+        sequence: 30
+        display: Equipment
+        return: EQUIPMENT
+    )
+
+    entry subcon (
+        sequence: 40
+        display: Subkon
+        return: SUBCON
+    )
+
+    entry operational (
+        sequence: 50
+        display: Operational
+        return: OPERATIONAL
+    )
+
+    entry other (
+        sequence: 60
+        display: Other
+        return: OTHER
+    )
+
+)
+
+lov yes-no (
+    name: YES_NO
+    source {
+        location: staticValues
+    }
+
+    entry y (
+        sequence: 10
+        display: Ya
+        return: Y
+    )
+
+    entry n (
+        sequence: 20
+        display: Tidak
+        return: N
+    )
+
+)

@@ -1,0 +1,420 @@
+list navigation-bar (
+    name: Navigation Bar
+
+    entry --- (
+        label: ---
+        layout {
+            sequence: 20
+            parentEntry: @app-user
+        }
+        link {
+            target: {
+                type: url
+                url: separator
+            }
+        }
+        serverSideCondition {
+            type: userIsAuthenticated
+        }
+    )
+
+    entry app-user (
+        label: &APP_USER.
+        icon {
+            imageIconCssClasses: fa-user
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                type: url
+                url: #
+            }
+        }
+        userDefinedAttributes {
+            2: has-username
+        }
+    )
+
+    entry sign-out (
+        label: Sign Out
+        icon {
+            imageIconCssClasses: fa-sign-out
+        }
+        layout {
+            sequence: 30
+            parentEntry: @app-user
+        }
+        link {
+            target: {
+                type: url
+                url: &LOGOUT_URL.
+            }
+        }
+        serverSideCondition {
+            type: userIsAuthenticated
+        }
+    )
+
+)
+
+list navigation-menu (
+    name: Navigation Menu
+
+    entry home (
+        label: Dashboard
+        icon {
+            imageIconCssClasses: fa-dashboard
+        }
+        layout {
+            sequence: 10
+        }
+        link {
+            target: {
+                page: 1
+            }
+        }
+    )
+
+    entry approvals (
+        label: Approval Inbox
+        icon {
+            imageIconCssClasses: fa-check-square-o
+        }
+        layout {
+            sequence: 20
+        }
+        link {
+            target: {
+                page: 60
+            }
+        }
+    )
+
+    entry printing (
+        label: Printing
+        icon {
+            imageIconCssClasses: fa-print
+        }
+        layout {
+            sequence: 30
+        }
+    )
+
+    entry job-orders (
+        label: Job Orders
+        icon {
+            imageIconCssClasses: fa-file-text-o
+        }
+        layout {
+            sequence: 40
+            parentEntry: @printing
+        }
+        link {
+            target: {
+                page: 20
+            }
+        }
+    )
+
+    entry job-costing (
+        label: Job Costing (HPP)
+        icon {
+            imageIconCssClasses: fa-calculator
+        }
+        layout {
+            sequence: 50
+            parentEntry: @printing
+        }
+        link {
+            target: {
+                page: 22
+            }
+        }
+    )
+
+    entry engineering (
+        label: Engineering
+        icon {
+            imageIconCssClasses: fa-wrench
+        }
+        layout {
+            sequence: 60
+        }
+    )
+
+    entry projects (
+        label: Projects
+        icon {
+            imageIconCssClasses: fa-briefcase
+        }
+        layout {
+            sequence: 70
+            parentEntry: @engineering
+        }
+        link {
+            target: {
+                page: 30
+            }
+        }
+    )
+
+    entry wbs-budget (
+        label: WBS & Budget vs Actual
+        icon {
+            imageIconCssClasses: fa-sitemap
+        }
+        layout {
+            sequence: 80
+            parentEntry: @engineering
+        }
+        link {
+            target: {
+                page: 32
+            }
+        }
+    )
+
+    entry project-summary (
+        label: Project Summary
+        icon {
+            imageIconCssClasses: fa-line-chart
+        }
+        layout {
+            sequence: 90
+            parentEntry: @engineering
+        }
+        link {
+            target: {
+                page: 34
+            }
+        }
+    )
+
+    entry procurement (
+        label: Procurement
+        icon {
+            imageIconCssClasses: fa-shopping-cart
+        }
+        layout {
+            sequence: 100
+        }
+    )
+
+    entry purchase-requisitions (
+        label: Purchase Requisitions
+        icon {
+            imageIconCssClasses: fa-file-o
+        }
+        layout {
+            sequence: 110
+            parentEntry: @procurement
+        }
+        link {
+            target: {
+                page: 40
+            }
+        }
+    )
+
+    entry pr-lines (
+        label: PR Lines
+        icon {
+            imageIconCssClasses: fa-list
+        }
+        layout {
+            sequence: 120
+            parentEntry: @procurement
+        }
+        link {
+            target: {
+                page: 42
+            }
+        }
+    )
+
+    entry inventory (
+        label: Inventory
+        icon {
+            imageIconCssClasses: fa-cubes
+        }
+        layout {
+            sequence: 130
+        }
+    )
+
+    entry stock-transactions (
+        label: Stock Transactions
+        icon {
+            imageIconCssClasses: fa-exchange
+        }
+        layout {
+            sequence: 140
+            parentEntry: @inventory
+        }
+        link {
+            target: {
+                page: 50
+            }
+        }
+    )
+
+    entry stock-on-hand (
+        label: Stock On Hand
+        icon {
+            imageIconCssClasses: fa-database
+        }
+        layout {
+            sequence: 150
+            parentEntry: @inventory
+        }
+        link {
+            target: {
+                page: 52
+            }
+        }
+    )
+
+    entry master-data (
+        label: Master Data
+        icon {
+            imageIconCssClasses: fa-table
+        }
+        layout {
+            sequence: 160
+        }
+    )
+
+    entry business-units (
+        label: Business Units
+        icon {
+            imageIconCssClasses: fa-building-o
+        }
+        layout {
+            sequence: 170
+            parentEntry: @master-data
+        }
+        link {
+            target: {
+                page: 10
+            }
+        }
+    )
+
+    entry customers (
+        label: Customers
+        icon {
+            imageIconCssClasses: fa-users
+        }
+        layout {
+            sequence: 180
+            parentEntry: @master-data
+        }
+        link {
+            target: {
+                page: 12
+            }
+        }
+    )
+
+    entry vendors (
+        label: Vendors
+        icon {
+            imageIconCssClasses: fa-truck
+        }
+        layout {
+            sequence: 190
+            parentEntry: @master-data
+        }
+        link {
+            target: {
+                page: 14
+            }
+        }
+    )
+
+    entry items (
+        label: Items
+        icon {
+            imageIconCssClasses: fa-tag
+        }
+        layout {
+            sequence: 200
+            parentEntry: @master-data
+        }
+        link {
+            target: {
+                page: 16
+            }
+        }
+    )
+
+    entry warehouses (
+        label: Warehouses & Locations
+        icon {
+            imageIconCssClasses: fa-home
+        }
+        layout {
+            sequence: 210
+            parentEntry: @master-data
+        }
+        link {
+            target: {
+                page: 18
+            }
+        }
+    )
+
+    entry administration (
+        label: Administration
+        icon {
+            imageIconCssClasses: fa-gear
+        }
+        layout {
+            sequence: 220
+        }
+        security {
+            authorizationScheme: @admin-rights
+        }
+    )
+
+    entry users-roles (
+        label: Users & Roles
+        icon {
+            imageIconCssClasses: fa-user-secret
+        }
+        layout {
+            sequence: 230
+            parentEntry: @administration
+        }
+        link {
+            target: {
+                page: 90
+            }
+        }
+        security {
+            authorizationScheme: @admin-rights
+        }
+    )
+
+    entry doc-types (
+        label: Document Types & Approval
+        icon {
+            imageIconCssClasses: fa-sliders
+        }
+        layout {
+            sequence: 240
+            parentEntry: @administration
+        }
+        link {
+            target: {
+                page: 92
+            }
+        }
+        security {
+            authorizationScheme: @admin-rights
+        }
+    )
+
+)

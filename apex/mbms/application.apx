@@ -1,0 +1,50 @@
+app MBMS (
+    name: MBMS - PT. Multisarana Niaga Mandiri
+    logo {
+        type: text
+        text: MBMS
+    }
+    navigation {
+        homeUrl: {
+            page: 1
+        }
+        loginUrl: {
+            page: LOGIN
+        }
+    }
+    navigationMenu {
+        listTemplate: @/side-navigation-menu
+        templateOptions: [
+            #DEFAULT#
+            js-defaultCollapsed
+            js-navCollapsed--hidden
+            t-TreeNav--styleA
+        ]
+        list: @navigation-menu
+    }
+    navigationBar {
+        list: @navigation-bar
+        listTemplate: @/navigation-bar
+        templateOptions: #DEFAULT#
+    }
+    userInterface {
+        currentTheme: @universal-theme
+        globalPage: 0
+        addBuiltWithApexToFooter: false
+    }
+    appFormatMasks {
+        date: DD-MON-YYYY
+        timestamp: DS
+        timestampTimeZone: DS
+    }
+    authentication {
+        scheme: @oracle-apex-accounts
+    }
+    sessionStateProtection {
+        checksumSalt: 6D4B2F0A9C1E47B8A3D5F7091C2E4B6D8F0A1C3E5B7D9F1A3C5E7B9D1F3A5C7E
+    }
+    runtime {
+        allowFeedback: false
+        compatibilityMode: 24.2
+    }
+)

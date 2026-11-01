@@ -1,0 +1,403 @@
+page 1 (
+    name: Dashboard
+    alias: HOME
+    title: Dashboard
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    navigation {
+        cursorFocus: doNotFocusCursor
+    }
+    security {
+        pageAccessProtection: argumentsMustHaveChecksum
+        formAutoComplete: false
+    }
+
+    region app-name (
+        name: Home
+        title: MBMS Dashboard
+        type: staticContent
+        source {
+            htmlCode: Satu sistem untuk Printing (Job Manufacturing) dan Engineering (Project Cost Control) di atas shared core. MVP sandbox - data dummy.
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/hero
+            templateOptions: #DEFAULT#
+        }
+        image {
+            fileUrl: #APP_FILES#icons/app-icon-512.png
+        }
+    )
+
+    region kpi (
+        name: Ringkasan
+        type: classicReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select (select count(*) from sys_approval_v where status = 'PENDING' and can_act_yn = 'Y') pending_for_me
+                     , (select count(*) from prt_job_order where status in ('APPROVED','IN_PROGRESS')) active_jobs
+                     , (select count(*) from prj_project where status in ('APPROVED','IN_PROGRESS')) active_projects
+                     , (select count(*) from pur_requisition where status = 'SUBMITTED') open_prs
+                     , (select count(*) from inv_stock_on_hand_v where below_min_yn = 'Y') items_below_min
+                  from dual
+                ```
+        }
+        layout {
+            sequence: 10
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: #DEFAULT#
+        }
+        componentAppearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Report--stretch
+                t-Report--hideNoPagination
+            ]
+        }
+
+        column PENDING_FOR_ME (
+            reportColumnQueryId: 1
+            derivedColumn: N
+            heading {
+                heading: Approval Menunggu Anda
+                alignment: center
+            }
+            layout {
+                sequence: 1
+                columnAlignment: center
+            }
+        )
+
+        column ACTIVE_JOBS (
+            reportColumnQueryId: 2
+            derivedColumn: N
+            heading {
+                heading: Job Order Aktif
+                alignment: center
+            }
+            layout {
+                sequence: 2
+                columnAlignment: center
+            }
+        )
+
+        column ACTIVE_PROJECTS (
+            reportColumnQueryId: 3
+            derivedColumn: N
+            heading {
+                heading: Proyek Aktif
+                alignment: center
+            }
+            layout {
+                sequence: 3
+                columnAlignment: center
+            }
+        )
+
+        column OPEN_PRS (
+            reportColumnQueryId: 4
+            derivedColumn: N
+            heading {
+                heading: PR Menunggu Approval
+                alignment: center
+            }
+            layout {
+                sequence: 4
+                columnAlignment: center
+            }
+        )
+
+        column ITEMS_BELOW_MIN (
+            reportColumnQueryId: 5
+            derivedColumn: N
+            heading {
+                heading: Item di Bawah Min. Stok
+                alignment: center
+            }
+            layout {
+                sequence: 5
+                columnAlignment: center
+            }
+        )
+
+    )
+
+    region job-status (
+        name: Job Order per Status
+        type: chart
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        chart {
+            type: pie
+        }
+        performance {
+            lazyLoading: true
+        }
+        value {
+            format: decimal
+            decimalPlaces: 0
+        }
+        legend {
+            show: false
+        }
+
+        series series (
+            name: Job Orders
+            execution {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select status, count(*) value from prt_job_order group by status order by 2 desc
+                    ```
+            }
+            columnMapping {
+                label: STATUS
+                value: VALUE
+            }
+            label {
+                show: true
+            }
+            performance {
+                maxRowsToProcess: 50
+            }
+        )
+
+    )
+
+    region stock-value (
+        name: Nilai Stok per Gudang
+        type: chart
+        layout {
+            sequence: 30
+            slot: body
+            startNewRow: false
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        chart {
+            type: bar
+        }
+        performance {
+            lazyLoading: true
+        }
+        value {
+            format: decimal
+            decimalPlaces: 0
+        }
+        legend {
+            show: false
+        }
+
+        series series (
+            name: Nilai Stok
+            execution {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select wh_code, sum(stock_value) value from inv_stock_on_hand_v group by wh_code order by 1
+                    ```
+            }
+            columnMapping {
+                label: WH_CODE
+                value: VALUE
+            }
+            label {
+                show: false
+            }
+            performance {
+                maxRowsToProcess: 50
+            }
+        )
+
+    )
+
+    region project-budget (
+        name: Proyek: Budget vs Aktual
+        type: chart
+        layout {
+            sequence: 40
+            slot: body
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        chart {
+            type: bar
+        }
+        performance {
+            lazyLoading: true
+        }
+        value {
+            format: decimal
+            decimalPlaces: 0
+        }
+        legend {
+            show: true
+        }
+
+        series budget (
+            name: Budget
+            execution {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select project_no, budget_amount from prj_project_summary_v order by project_no
+                    ```
+            }
+            columnMapping {
+                label: PROJECT_NO
+                value: BUDGET_AMOUNT
+            }
+            label {
+                show: false
+            }
+            performance {
+                maxRowsToProcess: 50
+            }
+        )
+
+        series actual (
+            name: Aktual
+            execution {
+                sequence: 20
+            }
+            source {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select project_no, actual_amount from prj_project_summary_v order by project_no
+                    ```
+            }
+            columnMapping {
+                label: PROJECT_NO
+                value: ACTUAL_AMOUNT
+            }
+            label {
+                show: false
+            }
+            performance {
+                maxRowsToProcess: 50
+            }
+        )
+
+    )
+
+    region job-hpp (
+        name: Job: HPP Estimasi vs Aktual
+        type: chart
+        layout {
+            sequence: 50
+            slot: body
+            startNewRow: false
+        }
+        appearance {
+            template: @/standard
+            templateOptions: [
+                #DEFAULT#
+                t-Region--scrollBody
+            ]
+        }
+        chart {
+            type: bar
+        }
+        performance {
+            lazyLoading: true
+        }
+        value {
+            format: decimal
+            decimalPlaces: 0
+        }
+        legend {
+            show: true
+        }
+
+        series estimated (
+            name: Estimasi
+            execution {
+                sequence: 10
+            }
+            source {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select job_no, est_hpp from prt_job_cost_v where status <> 'DRAFT' order by job_no
+                    ```
+            }
+            columnMapping {
+                label: JOB_NO
+                value: EST_HPP
+            }
+            label {
+                show: false
+            }
+            performance {
+                maxRowsToProcess: 50
+            }
+        )
+
+        series actual (
+            name: Aktual
+            execution {
+                sequence: 20
+            }
+            source {
+                type: sqlQuery
+                sqlQuery:
+                    ```sql
+                    select job_no, act_hpp from prt_job_cost_v where status <> 'DRAFT' order by job_no
+                    ```
+            }
+            columnMapping {
+                label: JOB_NO
+                value: ACT_HPP
+            }
+            label {
+                show: false
+            }
+            performance {
+                maxRowsToProcess: 50
+            }
+        )
+
+    )
+
+)

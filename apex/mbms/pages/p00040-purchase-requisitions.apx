@@ -1,0 +1,436 @@
+page 40 (
+    name: Purchase Requisitions
+    alias: PURCHASE-REQUISITIONS
+    title: Purchase Requisitions
+    pageGroup: @procurement
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region purchase-requisitions (
+        name: Purchase Requisitions
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select pr_id, pr_no, bu_code, pr_date, purpose, job_no, project_no, wbs_code, requested_by, need_date,
+                       description, line_count, total_amount, status
+                  from pur_requisition_v
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: #DEFAULT#
+        }
+        link {
+            linkColumn: customTarget
+            target: {
+                page: 41
+                items: {
+                    P41_PR_ID: \#PR_ID#\
+                }
+                clearCache: 41
+            }
+            linkIcon: <span aria-label="Edit"><span class="fa fa-edit" aria-hidden="true" title="Edit"></span></span>
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: Tidak ada data.
+        }
+        actionsMenu {
+            subscription: false
+        }
+
+        column PR_ID (
+            type: hidden
+            heading {
+                heading: ID
+            }
+            layout {
+                sequence: 1
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column PR_NO (
+            type: plainText
+            heading {
+                heading: No. PR
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column BU_CODE (
+            type: plainText
+            heading {
+                heading: BU
+            }
+            layout {
+                sequence: 3
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column PR_DATE (
+            type: plainText
+            heading {
+                heading: Tanggal
+            }
+            layout {
+                sequence: 4
+            }
+            source {
+                dataType: date
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column PURPOSE (
+            type: plainText
+            heading {
+                heading: Tujuan
+            }
+            layout {
+                sequence: 5
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column JOB_NO (
+            type: plainText
+            heading {
+                heading: Job
+            }
+            layout {
+                sequence: 6
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column PROJECT_NO (
+            type: plainText
+            heading {
+                heading: Proyek
+            }
+            layout {
+                sequence: 7
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column WBS_CODE (
+            type: plainText
+            heading {
+                heading: WBS
+            }
+            layout {
+                sequence: 8
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: H
+            }
+        )
+
+        column REQUESTED_BY (
+            type: plainText
+            heading {
+                heading: Requester
+            }
+            layout {
+                sequence: 9
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: I
+            }
+        )
+
+        column NEED_DATE (
+            type: plainText
+            heading {
+                heading: Dibutuhkan
+            }
+            layout {
+                sequence: 10
+            }
+            source {
+                dataType: date
+            }
+            advanced {
+                endUserAlias: J
+            }
+        )
+
+        column DESCRIPTION (
+            type: plainText
+            heading {
+                heading: Keterangan
+            }
+            layout {
+                sequence: 11
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: K
+            }
+        )
+
+        column LINE_COUNT (
+            type: link
+            heading {
+                heading: Jml Baris
+                alignment: end
+            }
+            layout {
+                sequence: 12
+                columnAlignment: end
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: L
+            }
+            link {
+                target: {
+                    page: 42
+                    items: {
+                        IR_PR_NO: #PR_NO#
+                    }
+                    clearCache: 42
+                    action: resetRegions
+                }
+                linkText: #LINE_COUNT#
+            }
+        )
+
+        column TOTAL_AMOUNT (
+            type: plainText
+            heading {
+                heading: Total
+                alignment: end
+            }
+            layout {
+                sequence: 13
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G990
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: M
+            }
+        )
+
+        column STATUS (
+            type: plainText
+            heading {
+                heading: Status
+            }
+            layout {
+                sequence: 14
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: N
+            }
+        )
+
+        savedReport 40001 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn PR_NO (
+                sequence: 1
+            )
+
+            displayColumn BU_CODE (
+                sequence: 2
+            )
+
+            displayColumn PR_DATE (
+                sequence: 3
+            )
+
+            displayColumn PURPOSE (
+                sequence: 4
+            )
+
+            displayColumn JOB_NO (
+                sequence: 5
+            )
+
+            displayColumn PROJECT_NO (
+                sequence: 6
+            )
+
+            displayColumn WBS_CODE (
+                sequence: 7
+            )
+
+            displayColumn REQUESTED_BY (
+                sequence: 8
+            )
+
+            displayColumn NEED_DATE (
+                sequence: 9
+            )
+
+            displayColumn DESCRIPTION (
+                sequence: 10
+            )
+
+            displayColumn LINE_COUNT (
+                sequence: 11
+            )
+
+            displayColumn TOTAL_AMOUNT (
+                sequence: 12
+            )
+
+            displayColumn STATUS (
+                sequence: 13
+            )
+
+            sort (
+                column: PR_NO
+                sort {
+                    sequence: 1
+                    direction: desc
+                }
+            )
+
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Create
+        layout {
+            sequence: 10
+            region: @purchase-requisitions
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 41
+                clearCache: 41
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+    )
+
+    dynamicAction edit-report-dialog-closed (
+        name: Edit Report - Dialog Closed
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @purchase-requisitions
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @purchase-requisitions
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)

@@ -1,0 +1,27 @@
+pageGroup master-data (
+    name: Master Data
+)
+
+pageGroup printing (
+    name: Printing
+)
+
+pageGroup engineering (
+    name: Engineering
+)
+
+pageGroup procurement (
+    name: Procurement
+)
+
+pageGroup inventory (
+    name: Inventory
+)
+
+pageGroup approval (
+    name: Approval
+)
+
+pageGroup administration (
+    name: Administration
+)

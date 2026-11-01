@@ -1,0 +1,319 @@
+page 93 (
+    name: Document Type
+    alias: DOCUMENT-TYPE
+    title: Document Type
+    pageGroup: @administration
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+        resizable: true
+    }
+    security {
+        authorizationScheme: @admin-rights
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region document-type (
+        name: Document Type
+        type: form
+        source {
+            location: localDatabase
+            tableName: SYS_DOC_TYPE
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: update
+        }
+    )
+
+    pageItem P93_DOC_TYPE (
+        type: hidden
+        layout {
+            sequence: 5
+            region: @document-type
+            slot: regionBody
+        }
+        source {
+            formRegion: @document-type
+            column: DOC_TYPE
+            dataType: varchar2
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P93_DOC_NAME (
+        type: textField
+        label {
+            label: Nama Dokumen
+            alignment: right
+        }
+        layout {
+            sequence: 10
+            region: @document-type
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+            maxLength: 100
+        }
+        source {
+            formRegion: @document-type
+            column: DOC_NAME
+            dataType: varchar2
+        }
+    )
+
+    pageItem P93_PREFIX (
+        type: textField
+        label {
+            label: Prefix Nomor
+            alignment: right
+        }
+        layout {
+            sequence: 20
+            region: @document-type
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+            maxLength: 10
+        }
+        source {
+            formRegion: @document-type
+            column: PREFIX
+            dataType: varchar2
+        }
+    )
+
+    pageItem P93_APPROVER1_ROLE (
+        type: selectList
+        label {
+            label: Approver Level 1
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @roles
+            displayExtraValues: true
+            displayNullValue: true
+            nullDisplayValue: - Tanpa approval -
+        }
+        layout {
+            sequence: 30
+            region: @document-type
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @document-type
+            column: APPROVER1_ROLE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P93_APPROVER2_ROLE (
+        type: selectList
+        label {
+            label: Approver Level 2
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @roles
+            displayExtraValues: true
+            displayNullValue: true
+            nullDisplayValue: - Tidak ada -
+        }
+        layout {
+            sequence: 40
+            region: @document-type
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @document-type
+            column: APPROVER2_ROLE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P93_LEVEL2_LIMIT (
+        type: numberField
+        label {
+            label: Level 2 bila nilai melebihi
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+        }
+        layout {
+            sequence: 50
+            region: @document-type
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @document-type
+            column: LEVEL2_LIMIT
+            dataType: number
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: definedByDynamicAction
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Apply Changes
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: :P93_DOC_TYPE is not null
+        }
+    )
+
+    dynamicAction cancel-dialog (
+        name: Cancel Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process initialize-form (
+        name: Initialize form Document Type
+        type: formInitialization
+        formRegion: @document-type
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+    )
+
+    process process-form (
+        name: Process form Document Type
+        type: formAutoRowProcessing
+        formRegion: @document-type
+        execution {
+            sequence: 10
+        }
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        settings {
+            showSuccessMessages: true
+        }
+        execution {
+            sequence: 50
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: SAVE
+        }
+    )
+
+)

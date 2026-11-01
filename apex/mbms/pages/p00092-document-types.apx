@@ -1,0 +1,248 @@
+page 92 (
+    name: Document Types & Approval
+    alias: DOCUMENT-TYPES
+    title: Document Types & Approval
+    pageGroup: @administration
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    security {
+        authorizationScheme: @admin-rights
+    }
+    help {
+        helpText: Approval matrix dan prefix penomoran configurable (D-11). Format nomor: PREFIX-BU-TAHUN-0001.
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region document-types (
+        name: Document Types & Approval
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select doc_type, doc_name, prefix, approver1_role, approver2_role, level2_limit
+                  from sys_doc_type
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: #DEFAULT#
+        }
+        link {
+            linkColumn: customTarget
+            target: {
+                page: 93
+                items: {
+                    P93_DOC_TYPE: \#DOC_TYPE#\
+                }
+                clearCache: 93
+            }
+            linkIcon: <span aria-label="Edit"><span class="fa fa-edit" aria-hidden="true" title="Edit"></span></span>
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: Tidak ada data.
+        }
+        actionsMenu {
+            subscription: false
+        }
+
+        column DOC_TYPE (
+            type: plainText
+            heading {
+                heading: Kode
+            }
+            layout {
+                sequence: 1
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column DOC_NAME (
+            type: plainText
+            heading {
+                heading: Dokumen
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column PREFIX (
+            type: plainText
+            heading {
+                heading: Prefix Nomor
+            }
+            layout {
+                sequence: 3
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column APPROVER1_ROLE (
+            type: plainText
+            heading {
+                heading: Approver 1
+            }
+            layout {
+                sequence: 4
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column APPROVER2_ROLE (
+            type: plainText
+            heading {
+                heading: Approver 2
+            }
+            layout {
+                sequence: 5
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column LEVEL2_LIMIT (
+            type: plainText
+            heading {
+                heading: Approver 2 bila nilai >
+                alignment: end
+            }
+            layout {
+                sequence: 6
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G990
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        savedReport 92001 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn DOC_TYPE (
+                sequence: 1
+            )
+
+            displayColumn DOC_NAME (
+                sequence: 2
+            )
+
+            displayColumn PREFIX (
+                sequence: 3
+            )
+
+            displayColumn APPROVER1_ROLE (
+                sequence: 4
+            )
+
+            displayColumn APPROVER2_ROLE (
+                sequence: 5
+            )
+
+            displayColumn LEVEL2_LIMIT (
+                sequence: 6
+            )
+
+            sort (
+                column: DOC_TYPE
+                sort {
+                    sequence: 1
+                }
+            )
+
+        )
+
+    )
+
+    dynamicAction edit-report-dialog-closed (
+        name: Edit Report - Dialog Closed
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @document-types
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @document-types
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)

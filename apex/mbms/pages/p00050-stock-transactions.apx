@@ -1,0 +1,544 @@
+page 50 (
+    name: Stock Transactions
+    alias: STOCK-TRANSACTIONS
+    title: Stock Transactions
+    pageGroup: @inventory
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    help {
+        helpText: Stock ledger: transaksi yang sudah diposting tidak dapat diubah/dihapus. Koreksi dengan transaksi ADJ_IN/ADJ_OUT/RETURN.
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region stock-transactions (
+        name: Stock Transactions
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select txn_id, txn_no, txn_date, txn_type, bu_code, wh_code, item_code, item_name, uom, qty, qty_signed,
+                       unit_cost, total_cost, job_no, project_no, wbs_code, reference, notes, created_by
+                  from inv_stock_txn_v
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: #DEFAULT#
+        }
+        link {
+            linkColumn: customTarget
+            target: {
+                page: 51
+                items: {
+                    P51_TXN_ID: \#TXN_ID#\
+                }
+                clearCache: 51
+            }
+            linkIcon: <span aria-label="Edit"><span class="fa fa-edit" aria-hidden="true" title="Edit"></span></span>
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: Tidak ada data.
+        }
+        actionsMenu {
+            subscription: false
+        }
+
+        column TXN_ID (
+            type: hidden
+            heading {
+                heading: ID
+            }
+            layout {
+                sequence: 1
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column TXN_NO (
+            type: plainText
+            heading {
+                heading: No. Transaksi
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column TXN_DATE (
+            type: plainText
+            heading {
+                heading: Tanggal
+            }
+            layout {
+                sequence: 3
+            }
+            source {
+                dataType: date
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column TXN_TYPE (
+            type: plainText
+            heading {
+                heading: Tipe
+            }
+            layout {
+                sequence: 4
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column BU_CODE (
+            type: plainText
+            heading {
+                heading: BU
+            }
+            layout {
+                sequence: 5
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column WH_CODE (
+            type: plainText
+            heading {
+                heading: Gudang/Lokasi
+            }
+            layout {
+                sequence: 6
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column ITEM_CODE (
+            type: plainText
+            heading {
+                heading: Kode Item
+            }
+            layout {
+                sequence: 7
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column ITEM_NAME (
+            type: plainText
+            heading {
+                heading: Nama Item
+            }
+            layout {
+                sequence: 8
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: H
+            }
+        )
+
+        column UOM (
+            type: plainText
+            heading {
+                heading: UoM
+            }
+            layout {
+                sequence: 9
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: I
+            }
+        )
+
+        column QTY (
+            type: plainText
+            heading {
+                heading: Qty
+                alignment: end
+            }
+            layout {
+                sequence: 10
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G990D99
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: J
+            }
+        )
+
+        column QTY_SIGNED (
+            type: plainText
+            heading {
+                heading: Qty (+/-)
+                alignment: end
+            }
+            layout {
+                sequence: 11
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G990D99
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: K
+            }
+        )
+
+        column UNIT_COST (
+            type: plainText
+            heading {
+                heading: Biaya Satuan
+                alignment: end
+            }
+            layout {
+                sequence: 12
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G990
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: L
+            }
+        )
+
+        column TOTAL_COST (
+            type: plainText
+            heading {
+                heading: Total Biaya
+                alignment: end
+            }
+            layout {
+                sequence: 13
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G990
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: M
+            }
+        )
+
+        column JOB_NO (
+            type: plainText
+            heading {
+                heading: Job
+            }
+            layout {
+                sequence: 14
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: N
+            }
+        )
+
+        column PROJECT_NO (
+            type: plainText
+            heading {
+                heading: Proyek
+            }
+            layout {
+                sequence: 15
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: O
+            }
+        )
+
+        column WBS_CODE (
+            type: plainText
+            heading {
+                heading: WBS
+            }
+            layout {
+                sequence: 16
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: P
+            }
+        )
+
+        column REFERENCE (
+            type: plainText
+            heading {
+                heading: Referensi
+            }
+            layout {
+                sequence: 17
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: Q
+            }
+        )
+
+        column NOTES (
+            type: plainText
+            heading {
+                heading: Catatan
+            }
+            layout {
+                sequence: 18
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: R
+            }
+        )
+
+        column CREATED_BY (
+            type: plainText
+            heading {
+                heading: Dibuat Oleh
+            }
+            layout {
+                sequence: 19
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: S
+            }
+        )
+
+        savedReport 50001 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn TXN_NO (
+                sequence: 1
+            )
+
+            displayColumn TXN_DATE (
+                sequence: 2
+            )
+
+            displayColumn TXN_TYPE (
+                sequence: 3
+            )
+
+            displayColumn BU_CODE (
+                sequence: 4
+            )
+
+            displayColumn WH_CODE (
+                sequence: 5
+            )
+
+            displayColumn ITEM_CODE (
+                sequence: 6
+            )
+
+            displayColumn ITEM_NAME (
+                sequence: 7
+            )
+
+            displayColumn UOM (
+                sequence: 8
+            )
+
+            displayColumn QTY (
+                sequence: 9
+            )
+
+            displayColumn QTY_SIGNED (
+                sequence: 10
+            )
+
+            displayColumn UNIT_COST (
+                sequence: 11
+            )
+
+            displayColumn TOTAL_COST (
+                sequence: 12
+            )
+
+            displayColumn JOB_NO (
+                sequence: 13
+            )
+
+            displayColumn PROJECT_NO (
+                sequence: 14
+            )
+
+            displayColumn WBS_CODE (
+                sequence: 15
+            )
+
+            displayColumn REFERENCE (
+                sequence: 16
+            )
+
+            displayColumn NOTES (
+                sequence: 17
+            )
+
+            displayColumn CREATED_BY (
+                sequence: 18
+            )
+
+            sort (
+                column: TXN_NO
+                sort {
+                    sequence: 1
+                    direction: desc
+                }
+            )
+
+        )
+
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Create
+        layout {
+            sequence: 10
+            region: @stock-transactions
+            slot: rightOfInteractiveReportSearchBar
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: redirectThisApp
+            target: {
+                page: 51
+                clearCache: 51
+            }
+            warnOnUnsavedChanges: doNotCheck
+        }
+        security {
+            authorizationScheme: @warehouse-rights
+        }
+    )
+
+    dynamicAction edit-report-dialog-closed (
+        name: Edit Report - Dialog Closed
+        execution {
+            sequence: 10
+        }
+        when {
+            event: apexafterclosedialog
+            selectionType: region
+            region: @stock-transactions
+        }
+
+        action native-refresh (
+            action: refresh
+            affectedElements {
+                selectionType: region
+                region: @stock-transactions
+            }
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+)

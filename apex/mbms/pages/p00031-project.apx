@@ -1,0 +1,687 @@
+page 31 (
+    name: Project
+    alias: PROJECT
+    title: Project
+    pageGroup: @engineering
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+        resizable: true
+    }
+    security {
+        authorizationScheme: @engineering-rights
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region project (
+        name: Project
+        type: form
+        source {
+            location: localDatabase
+            tableName: PRJ_PROJECT
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: [
+                add
+                update
+                delete
+            ]
+        }
+    )
+
+    pageItem P31_PROJECT_ID (
+        type: hidden
+        layout {
+            sequence: 5
+            region: @project
+            slot: regionBody
+        }
+        source {
+            formRegion: @project
+            column: PROJECT_ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P31_PROJECT_NO (
+        type: displayOnly
+        label {
+            label: No. Proyek
+            alignment: right
+        }
+        settings {
+            sendOnPageSubmit: false
+        }
+        layout {
+            sequence: 10
+            region: @project
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @project
+            column: PROJECT_NO
+            dataType: varchar2
+            queryOnly: true
+        }
+    )
+
+    pageItem P31_STATUS (
+        type: selectList
+        label {
+            label: Status
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @doc-status
+            displayExtraValues: true
+            displayNullValue: true
+            nullDisplayValue: - Pilih -
+        }
+        layout {
+            sequence: 20
+            region: @project
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @project
+            column: STATUS
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: DRAFT
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: nvl(:P31_STATUS,'DRAFT') not in ('APPROVED','IN_PROGRESS','COMPLETED')
+        }
+        help {
+            inlineHelpText: Budget diajukan lewat Submit for Approval setelah WBS diisi. Status hanya berubah lewat Submit for Approval / Approval Inbox.
+        }
+    )
+
+    pageItem P31_BU_ID (
+        type: hidden
+        layout {
+            sequence: 30
+            region: @project
+            slot: regionBody
+        }
+        source {
+            formRegion: @project
+            column: BU_ID
+            dataType: number
+        }
+        default {
+            type: sqlQuerySingleValue
+            sqlQuerySingleValue: select bu_id from mdm_business_unit where bu_code = 'ENG'
+        }
+    )
+
+    pageItem P31_PROJECT_NAME (
+        type: textField
+        label {
+            label: Nama Proyek
+            alignment: right
+        }
+        layout {
+            sequence: 40
+            region: @project
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 60
+        }
+        validation {
+            valueRequired: true
+            maxLength: 300
+        }
+        source {
+            formRegion: @project
+            column: PROJECT_NAME
+            dataType: varchar2
+        }
+    )
+
+    pageItem P31_PROJECT_TYPE (
+        type: selectList
+        label {
+            label: Tipe Proyek (D-03)
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @project-types
+            displayExtraValues: true
+            displayNullValue: true
+            nullDisplayValue: - Pilih -
+        }
+        layout {
+            sequence: 50
+            region: @project
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @project
+            column: PROJECT_TYPE
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: FABRICATION
+        }
+    )
+
+    pageItem P31_CUSTOMER_ID (
+        type: selectList
+        label {
+            label: Customer
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @customers
+            displayExtraValues: true
+            displayNullValue: true
+            nullDisplayValue: - Pilih -
+        }
+        layout {
+            sequence: 60
+            region: @project
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @project
+            column: CUSTOMER_ID
+            dataType: number
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: not (nvl(:P31_STATUS,'DRAFT') in ('DRAFT','REJECTED'))
+        }
+    )
+
+    pageItem P31_CONTRACT_VALUE (
+        type: numberField
+        label {
+            label: Nilai Kontrak
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+        }
+        layout {
+            sequence: 70
+            region: @project
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @project
+            column: CONTRACT_VALUE
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 0
+        }
+        readOnly {
+            type: expression
+            plsqlExpression: not (nvl(:P31_STATUS,'DRAFT') in ('DRAFT','REJECTED'))
+        }
+        help {
+            inlineHelpText: Setelah approved, perubahan nilai kontrak lewat Change Order (Fase 3).
+        }
+    )
+
+    pageItem P31_RETENTION_PCT (
+        type: numberField
+        label {
+            label: Retensi (%)
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+            maxValue: 100
+        }
+        layout {
+            sequence: 80
+            region: @project
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @project
+            column: RETENTION_PCT
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 5
+        }
+    )
+
+    pageItem P31_START_DATE (
+        type: datePicker
+        label {
+            label: Tanggal Mulai
+            alignment: right
+        }
+        layout {
+            sequence: 90
+            region: @project
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @project
+            column: START_DATE
+            dataType: date
+        }
+    )
+
+    pageItem P31_END_DATE (
+        type: datePicker
+        label {
+            label: Target Selesai
+            alignment: right
+        }
+        layout {
+            sequence: 100
+            region: @project
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @project
+            column: END_DATE
+            dataType: date
+        }
+    )
+
+    pageItem P31_PROGRESS_PCT (
+        type: numberField
+        label {
+            label: Progres (%) - metode output (D-08)
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+            maxValue: 100
+        }
+        layout {
+            sequence: 110
+            region: @project
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @project
+            column: PROGRESS_PCT
+            dataType: number
+        }
+        default {
+            type: static
+            staticValue: 0
+        }
+    )
+
+    pageItem P31_PROJECT_MANAGER (
+        type: textField
+        label {
+            label: Project Manager
+            alignment: right
+        }
+        layout {
+            sequence: 120
+            region: @project
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 255
+        }
+        source {
+            formRegion: @project
+            column: PROJECT_MANAGER
+            dataType: varchar2
+        }
+    )
+
+    pageItem P31_NOTES (
+        type: textarea
+        label {
+            label: Catatan
+            alignment: right
+        }
+        layout {
+            sequence: 130
+            region: @project
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+            height: 3
+        }
+        validation {
+            maxLength: 1000
+        }
+        source {
+            formRegion: @project
+            column: NOTES
+            dataType: varchar2
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: definedByDynamicAction
+        }
+    )
+
+    button delete (
+        buttonName: DELETE
+        label: Delete
+        layout {
+            sequence: 20
+            region: @buttons
+            slot: delete
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: [
+                #DEFAULT#
+                t-Button--danger
+                t-Button--simple
+            ]
+        }
+        behavior {
+            executeValidations: false
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: delete
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: &APP_TEXT$DELETE_MSG!RAW.
+            style: danger
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: :P31_PROJECT_ID is not null and nvl(:P31_STATUS,'DRAFT') = 'DRAFT'
+        }
+    )
+
+    button save (
+        buttonName: SAVE
+        label: Apply Changes
+        layout {
+            sequence: 30
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: :P31_PROJECT_ID is not null and nvl(:P31_STATUS,'DRAFT') not in ('SUBMITTED','CLOSED','CANCELLED')
+        }
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Create
+        layout {
+            sequence: 40
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: :P31_PROJECT_ID is null
+        }
+    )
+
+    button submit (
+        buttonName: SUBMIT
+        label: Submit for Approval
+        layout {
+            sequence: 50
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: update
+            requiresConfirmation: true
+        }
+        confirmation {
+            message: Ajukan dokumen ini untuk approval? Setelah diajukan dokumen terkunci.
+            style: information
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: :P31_PROJECT_ID is not null and nvl(:P31_STATUS,'DRAFT') in ('DRAFT','REJECTED')
+        }
+    )
+
+    dynamicAction cancel-dialog (
+        name: Cancel Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    process initialize-form (
+        name: Initialize form Project
+        type: formInitialization
+        formRegion: @project
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+    )
+
+    process process-form (
+        name: Process form Project
+        type: formAutoRowProcessing
+        formRegion: @project
+        execution {
+            sequence: 10
+        }
+    )
+
+    process submit-for-approval (
+        name: Submit for Approval
+        type: executeCode
+        source {
+            plsqlCode:
+                ```plsql
+                mbms_approval.submit(p_doc_type => 'PRJ', p_doc_id => :P31_PROJECT_ID);
+                ```
+        }
+        execution {
+            sequence: 20
+        }
+        successMessage {
+            successMessage: Dokumen diajukan untuk approval.
+        }
+        serverSideCondition {
+            whenButtonPressed: @submit
+        }
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        settings {
+            showSuccessMessages: true
+        }
+        execution {
+            sequence: 50
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: DELETE,SAVE,CREATE,SUBMIT
+        }
+    )
+
+)

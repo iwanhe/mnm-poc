@@ -1,0 +1,54 @@
+authorization admin-rights (
+    name: Admin Rights
+    type: plSqlFunctionBody
+    settings {
+        plsqlFunctionBody: return mbms_sec.has_role('ADMIN');
+    }
+    error {
+        errorMessage: Akses ditolak: hanya untuk role ADMIN.
+    }
+)
+
+authorization master-data-rights (
+    name: Master Data Rights
+    type: plSqlFunctionBody
+    settings {
+        plsqlFunctionBody: return mbms_sec.has_role('ADMIN') or mbms_sec.has_role('FINANCE') or mbms_sec.has_role('PROCUREMENT') or mbms_sec.has_role('SALES');
+    }
+    error {
+        errorMessage: Akses ditolak: perubahan master data hanya untuk ADMIN/FINANCE/PROCUREMENT/SALES.
+    }
+)
+
+authorization printing-rights (
+    name: Printing Rights
+    type: plSqlFunctionBody
+    settings {
+        plsqlFunctionBody: return mbms_sec.has_role('PRINT_MGR') or mbms_sec.has_role('SALES') or mbms_sec.has_role('DIRECTOR');
+    }
+    error {
+        errorMessage: Akses ditolak: hanya untuk Printing Manager/Sales/Director.
+    }
+)
+
+authorization engineering-rights (
+    name: Engineering Rights
+    type: plSqlFunctionBody
+    settings {
+        plsqlFunctionBody: return mbms_sec.has_role('PROJECT_MGR') or mbms_sec.has_role('ENG_MGR') or mbms_sec.has_role('DIRECTOR');
+    }
+    error {
+        errorMessage: Akses ditolak: hanya untuk Project Manager/Engineering Manager/Director.
+    }
+)
+
+authorization warehouse-rights (
+    name: Warehouse Rights
+    type: plSqlFunctionBody
+    settings {
+        plsqlFunctionBody: return mbms_sec.has_role('WAREHOUSE');
+    }
+    error {
+        errorMessage: Akses ditolak: transaksi stok hanya untuk role WAREHOUSE.
+    }
+)

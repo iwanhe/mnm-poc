@@ -1,0 +1,477 @@
+page 34 (
+    name: Project Summary
+    alias: PROJECT-SUMMARY
+    title: Project Summary
+    pageGroup: @engineering
+    appearance {
+        pageTemplate: @/standard
+        templateOptions: #DEFAULT#
+    }
+    help {
+        helpText: Peringatan: Estimasi Rugi = budget melebihi nilai kontrak (PSAK 72 onerous contract); Terlambat = melewati target selesai.
+    }
+
+    region breadcrumb (
+        name: Breadcrumb
+        type: breadcrumb
+        source {
+            breadcrumb: @breadcrumb
+        }
+        layout {
+            sequence: 10
+            slot: breadcrumbBar
+        }
+        appearance {
+            template: @/title-bar
+            templateOptions: [
+                #DEFAULT#
+                t-BreadcrumbRegion--useBreadcrumbTitle
+            ]
+        }
+        componentAppearance {
+            breadcrumbTemplate: @/breadcrumb
+            templateOptions: #DEFAULT#
+        }
+    )
+
+    region project-summary (
+        name: Project Summary
+        type: interactiveReport
+        source {
+            location: localDatabase
+            type: sqlQuery
+            sqlQuery:
+                ```sql
+                select project_id, project_no, project_name, project_type, customer_name, status, start_date, end_date,
+                       progress_pct, contract_value, retention_pct, retention_amount, budget_amount, actual_amount,
+                       cost_variance, planned_margin, loss_warning_yn, overdue_yn
+                  from prj_project_summary_v
+                ```
+        }
+        layout {
+            sequence: 20
+            slot: body
+        }
+        appearance {
+            template: @/interactive-report
+            templateOptions: #DEFAULT#
+        }
+        pagination {
+            type: rowRangesXToY
+        }
+        messages {
+            whenNoDataFound: Tidak ada data.
+        }
+        actionsMenu {
+            subscription: false
+        }
+
+        column PROJECT_ID (
+            type: hidden
+            heading {
+                heading: ID
+            }
+            layout {
+                sequence: 1
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: A
+            }
+        )
+
+        column PROJECT_NO (
+            type: plainText
+            heading {
+                heading: No. Proyek
+            }
+            layout {
+                sequence: 2
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: B
+            }
+        )
+
+        column PROJECT_NAME (
+            type: plainText
+            heading {
+                heading: Proyek
+            }
+            layout {
+                sequence: 3
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: C
+            }
+        )
+
+        column PROJECT_TYPE (
+            type: plainText
+            heading {
+                heading: Tipe
+            }
+            layout {
+                sequence: 4
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: D
+            }
+        )
+
+        column CUSTOMER_NAME (
+            type: plainText
+            heading {
+                heading: Customer
+            }
+            layout {
+                sequence: 5
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: E
+            }
+        )
+
+        column STATUS (
+            type: plainText
+            heading {
+                heading: Status
+            }
+            layout {
+                sequence: 6
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: F
+            }
+        )
+
+        column START_DATE (
+            type: plainText
+            heading {
+                heading: Mulai
+            }
+            layout {
+                sequence: 7
+            }
+            source {
+                dataType: date
+            }
+            advanced {
+                endUserAlias: G
+            }
+        )
+
+        column END_DATE (
+            type: plainText
+            heading {
+                heading: Target
+            }
+            layout {
+                sequence: 8
+            }
+            source {
+                dataType: date
+            }
+            advanced {
+                endUserAlias: H
+            }
+        )
+
+        column PROGRESS_PCT (
+            type: plainText
+            heading {
+                heading: Progres %
+                alignment: end
+            }
+            layout {
+                sequence: 9
+                columnAlignment: end
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: I
+            }
+        )
+
+        column CONTRACT_VALUE (
+            type: plainText
+            heading {
+                heading: Nilai Kontrak
+                alignment: end
+            }
+            layout {
+                sequence: 10
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G990
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: J
+            }
+        )
+
+        column RETENTION_PCT (
+            type: plainText
+            heading {
+                heading: Retensi %
+                alignment: end
+            }
+            layout {
+                sequence: 11
+                columnAlignment: end
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: K
+            }
+        )
+
+        column RETENTION_AMOUNT (
+            type: plainText
+            heading {
+                heading: Nilai Retensi
+                alignment: end
+            }
+            layout {
+                sequence: 12
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G990
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: L
+            }
+        )
+
+        column BUDGET_AMOUNT (
+            type: plainText
+            heading {
+                heading: Budget
+                alignment: end
+            }
+            layout {
+                sequence: 13
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G990
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: M
+            }
+        )
+
+        column ACTUAL_AMOUNT (
+            type: plainText
+            heading {
+                heading: Aktual
+                alignment: end
+            }
+            layout {
+                sequence: 14
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G990
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: N
+            }
+        )
+
+        column COST_VARIANCE (
+            type: plainText
+            heading {
+                heading: Cost Variance
+                alignment: end
+            }
+            layout {
+                sequence: 15
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G990
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: O
+            }
+        )
+
+        column PLANNED_MARGIN (
+            type: plainText
+            heading {
+                heading: Planned Margin
+                alignment: end
+            }
+            layout {
+                sequence: 16
+                columnAlignment: end
+            }
+            appearance {
+                formatMask: 999G999G999G999G990
+            }
+            source {
+                dataType: number
+            }
+            advanced {
+                endUserAlias: P
+            }
+        )
+
+        column LOSS_WARNING_YN (
+            type: plainText
+            heading {
+                heading: Estimasi Rugi?
+            }
+            layout {
+                sequence: 17
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: Q
+            }
+        )
+
+        column OVERDUE_YN (
+            type: plainText
+            heading {
+                heading: Terlambat?
+            }
+            layout {
+                sequence: 18
+            }
+            source {
+                dataType: varchar2
+            }
+            advanced {
+                endUserAlias: R
+            }
+        )
+
+        savedReport 34001 (
+            visibility: primaryDefault
+            view {
+                rowsPerPage: 50
+            }
+
+            displayColumn PROJECT_NO (
+                sequence: 1
+            )
+
+            displayColumn PROJECT_NAME (
+                sequence: 2
+            )
+
+            displayColumn PROJECT_TYPE (
+                sequence: 3
+            )
+
+            displayColumn CUSTOMER_NAME (
+                sequence: 4
+            )
+
+            displayColumn STATUS (
+                sequence: 5
+            )
+
+            displayColumn START_DATE (
+                sequence: 6
+            )
+
+            displayColumn END_DATE (
+                sequence: 7
+            )
+
+            displayColumn PROGRESS_PCT (
+                sequence: 8
+            )
+
+            displayColumn CONTRACT_VALUE (
+                sequence: 9
+            )
+
+            displayColumn RETENTION_PCT (
+                sequence: 10
+            )
+
+            displayColumn RETENTION_AMOUNT (
+                sequence: 11
+            )
+
+            displayColumn BUDGET_AMOUNT (
+                sequence: 12
+            )
+
+            displayColumn ACTUAL_AMOUNT (
+                sequence: 13
+            )
+
+            displayColumn COST_VARIANCE (
+                sequence: 14
+            )
+
+            displayColumn PLANNED_MARGIN (
+                sequence: 15
+            )
+
+            displayColumn LOSS_WARNING_YN (
+                sequence: 16
+            )
+
+            displayColumn OVERDUE_YN (
+                sequence: 17
+            )
+
+            sort (
+                column: PROJECT_NO
+                sort {
+                    sequence: 1
+                    direction: desc
+                }
+            )
+
+        )
+
+    )
+
+)

@@ -1,0 +1,584 @@
+page 51 (
+    name: Stock Transaction
+    alias: STOCK-TRANSACTION
+    title: Stock Transaction
+    pageGroup: @inventory
+    appearance {
+        pageMode: modalDialog
+        dialogTemplate: @/modal-dialog
+        templateOptions: #DEFAULT#
+    }
+    dialog {
+        chained: false
+        resizable: true
+    }
+    security {
+        authorizationScheme: @warehouse-rights
+    }
+
+    region buttons (
+        name: Buttons
+        type: staticContent
+        layout {
+            sequence: 20
+            slot: dialogFooter
+        }
+        appearance {
+            template: @/buttons-container
+            templateOptions: #DEFAULT#
+        }
+        settings {
+            outputAs: text
+        }
+    )
+
+    region stock-transaction (
+        name: Stock Transaction
+        type: form
+        source {
+            location: localDatabase
+            tableName: INV_STOCK_TXN
+        }
+        layout {
+            sequence: 10
+            slot: contentBody
+        }
+        appearance {
+            template: @/blank-with-attributes
+            templateOptions: #DEFAULT#
+        }
+        edit {
+            enabled: true
+            allowedOperations: add
+        }
+    )
+
+    pageItem P51_TXN_ID (
+        type: hidden
+        layout {
+            sequence: 5
+            region: @stock-transaction
+            slot: regionBody
+        }
+        source {
+            formRegion: @stock-transaction
+            column: TXN_ID
+            dataType: number
+            primaryKey: true
+        }
+        security {
+            sessionStateProtection: checksumRequiredSessionLevel
+        }
+    )
+
+    pageItem P51_TXN_NO (
+        type: displayOnly
+        label {
+            label: No. Transaksi
+            alignment: right
+        }
+        settings {
+            sendOnPageSubmit: false
+        }
+        layout {
+            sequence: 10
+            region: @stock-transaction
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+        }
+        source {
+            formRegion: @stock-transaction
+            column: TXN_NO
+            dataType: varchar2
+            queryOnly: true
+        }
+    )
+
+    pageItem P51_TXN_DATE (
+        type: datePicker
+        label {
+            label: Tanggal
+            alignment: right
+        }
+        layout {
+            sequence: 20
+            region: @stock-transaction
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @stock-transaction
+            column: TXN_DATE
+            dataType: date
+        }
+        default {
+            type: sqlQuerySingleValue
+            sqlQuerySingleValue: select trunc(sysdate) from dual
+        }
+    )
+
+    pageItem P51_TXN_TYPE (
+        type: selectList
+        label {
+            label: Tipe Transaksi
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @txn-types
+            displayExtraValues: true
+            displayNullValue: true
+            nullDisplayValue: - Pilih -
+        }
+        layout {
+            sequence: 30
+            region: @stock-transaction
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @stock-transaction
+            column: TXN_TYPE
+            dataType: varchar2
+        }
+        default {
+            type: static
+            staticValue: RECEIPT
+        }
+    )
+
+    pageItem P51_WAREHOUSE_ID (
+        type: selectList
+        label {
+            label: Gudang / Lokasi
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @warehouses
+            displayExtraValues: true
+            displayNullValue: true
+            nullDisplayValue: - Pilih -
+        }
+        layout {
+            sequence: 40
+            region: @stock-transaction
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @stock-transaction
+            column: WAREHOUSE_ID
+            dataType: number
+        }
+    )
+
+    pageItem P51_ITEM_ID (
+        type: selectList
+        label {
+            label: Item
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @items
+            displayExtraValues: true
+            displayNullValue: true
+            nullDisplayValue: - Pilih -
+        }
+        layout {
+            sequence: 50
+            region: @stock-transaction
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @stock-transaction
+            column: ITEM_ID
+            dataType: number
+        }
+    )
+
+    pageItem P51_QTY (
+        type: numberField
+        label {
+            label: Qty
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+        }
+        layout {
+            sequence: 60
+            region: @stock-transaction
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/required-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            valueRequired: true
+        }
+        source {
+            formRegion: @stock-transaction
+            column: QTY
+            dataType: number
+        }
+    )
+
+    pageItem P51_UNIT_COST (
+        type: numberField
+        label {
+            label: Biaya Satuan
+            alignment: right
+        }
+        settings {
+            numberAlignment: end
+            virtualKeyboard: decimal
+            minValue: 0
+        }
+        layout {
+            sequence: 70
+            region: @stock-transaction
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        source {
+            formRegion: @stock-transaction
+            column: UNIT_COST
+            dataType: number
+        }
+        help {
+            inlineHelpText: Wajib untuk Receipt. Kosongkan untuk Issue/Return: dihitung dari biaya rata-rata.
+        }
+    )
+
+    pageItem P51_JOB_ID (
+        type: selectList
+        label {
+            label: Job Order
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @open-jobs
+            displayExtraValues: true
+            displayNullValue: true
+            nullDisplayValue: - Pilih -
+        }
+        layout {
+            sequence: 80
+            region: @stock-transaction
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @stock-transaction
+            column: JOB_ID
+            dataType: number
+        }
+        help {
+            inlineHelpText: Issue/Return wajib ke Job Order atau Proyek yang sudah approved (BR-05).
+        }
+    )
+
+    pageItem P51_PROJECT_ID (
+        type: selectList
+        label {
+            label: Proyek
+            alignment: right
+        }
+        lov {
+            type: sharedComponent
+            lov: @open-projects
+            displayExtraValues: true
+            displayNullValue: true
+            nullDisplayValue: - Pilih -
+        }
+        layout {
+            sequence: 90
+            region: @stock-transaction
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @stock-transaction
+            column: PROJECT_ID
+            dataType: number
+        }
+    )
+
+    pageItem P51_WBS_ID (
+        type: selectList
+        label {
+            label: WBS
+            alignment: right
+        }
+        lov {
+            type: sqlQuery
+            sqlQuery: select wbs_code || ' - ' || wbs_name d, wbs_id r from prj_wbs where project_id = :P51_PROJECT_ID order by wbs_code
+            displayExtraValues: true
+            displayNullValue: true
+            nullDisplayValue: - Pilih -
+        }
+        cascadingLov {
+            parentItems: P51_PROJECT_ID
+            parentRequired: false
+        }
+        layout {
+            sequence: 100
+            region: @stock-transaction
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            height: 1
+        }
+        source {
+            formRegion: @stock-transaction
+            column: WBS_ID
+            dataType: number
+        }
+    )
+
+    pageItem P51_REFERENCE (
+        type: textField
+        label {
+            label: Referensi (PO/DO/BA)
+            alignment: right
+        }
+        layout {
+            sequence: 110
+            region: @stock-transaction
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 32
+        }
+        validation {
+            maxLength: 100
+        }
+        source {
+            formRegion: @stock-transaction
+            column: REFERENCE
+            dataType: varchar2
+        }
+    )
+
+    pageItem P51_NOTES (
+        type: textarea
+        label {
+            label: Catatan
+            alignment: right
+        }
+        layout {
+            sequence: 120
+            region: @stock-transaction
+            slot: regionBody
+            alignment: left
+        }
+        appearance {
+            template: @/optional-floating
+            templateOptions: #DEFAULT#
+            width: 60
+            height: 3
+        }
+        validation {
+            maxLength: 500
+        }
+        source {
+            formRegion: @stock-transaction
+            column: NOTES
+            dataType: varchar2
+        }
+    )
+
+    button cancel (
+        buttonName: CANCEL
+        label: Cancel
+        layout {
+            sequence: 10
+            region: @buttons
+            slot: close
+        }
+        appearance {
+            buttonTemplate: @/text
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            action: definedByDynamicAction
+        }
+    )
+
+    button create (
+        buttonName: CREATE
+        label: Create
+        layout {
+            sequence: 40
+            region: @buttons
+            slot: next
+        }
+        appearance {
+            buttonTemplate: @/text
+            hot: true
+            templateOptions: #DEFAULT#
+        }
+        behavior {
+            warnOnUnsavedChanges: doNotCheck
+            databaseAction: insert
+        }
+        serverSideCondition {
+            type: expression
+            plsqlExpression: :P51_TXN_ID is null
+        }
+    )
+
+    dynamicAction cancel-dialog (
+        name: Cancel Dialog
+        execution {
+            sequence: 10
+        }
+        when {
+            event: click
+            selectionType: button
+            button: @cancel
+        }
+
+        action native-dialog-cancel (
+            action: cancelDialog
+            execution {
+                sequence: 10
+                fireOnInit: false
+            }
+        )
+
+    )
+
+    validation receipt-cost-required (
+        name: Biaya wajib untuk receipt
+        execution {
+            sequence: 10
+        }
+        validation {
+            type: expression
+            plsqlExpression: :P51_TXN_TYPE not in ('RECEIPT','ADJ_IN') or :P51_UNIT_COST is not null
+        }
+        error {
+            errorMessage: Biaya satuan wajib diisi untuk Receipt / Adjustment (+).
+            displayLocation: inlineWithFieldAndInNotification
+            associatedItem: @P51_UNIT_COST
+        }
+    )
+
+    validation issue-reference-required (
+        name: Referensi job/proyek untuk issue
+        execution {
+            sequence: 20
+        }
+        validation {
+            type: expression
+            plsqlExpression: :P51_TXN_TYPE not in ('ISSUE','RETURN') or :P51_JOB_ID is not null or :P51_PROJECT_ID is not null
+        }
+        error {
+            errorMessage: Issue/Return wajib mereferensikan Job Order atau Proyek.
+            displayLocation: inlineWithFieldAndInNotification
+            associatedItem: @P51_JOB_ID
+        }
+    )
+
+    process initialize-form (
+        name: Initialize form Stock Transaction
+        type: formInitialization
+        formRegion: @stock-transaction
+        execution {
+            sequence: 10
+            point: beforeHeader
+        }
+    )
+
+    process process-form (
+        name: Process form Stock Transaction
+        type: formAutoRowProcessing
+        formRegion: @stock-transaction
+        execution {
+            sequence: 10
+        }
+    )
+
+    process close-dialog (
+        name: Close Dialog
+        type: closeDialog
+        settings {
+            showSuccessMessages: true
+        }
+        execution {
+            sequence: 50
+        }
+        serverSideCondition {
+            type: requestIsContainedInValue
+            value: CREATE
+        }
+    )
+
+)
