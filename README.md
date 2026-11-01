@@ -86,13 +86,35 @@ Hak akses MBMS memakai **role di tabel `SYS_USER_ROLE`**, bukan ACL APEX. Setiap
 **Cara cepat (script SQL, disarankan).** Script ini membuat semua akun di tabel bawah sekaligus mendaftarkan rolenya, sehingga langkah 4 tidak perlu lagi.
 
 1. Login sebagai **workspace administrator**.
-2. Buka **SQL Workshop → SQL Scripts → Upload** → [`database/admin/create_demo_users.sql`](database/admin/create_demo_users.sql) → **Run**.
-3. Buka hasil run (**View Results**). Output berisi **password acak tiap user**. Catat sekarang, karena password itu tidak disimpan di mana pun.
-4. Opsional, sebelum Run, ubah konstanta di awal blok:
-   - `c_password`: satu password untuk semua user. Harus memenuhi password policy workspace.
-   - `c_extra_admin`: username workspace Anda sendiri, untuk didaftarkan sebagai `ADMIN` MBMS.
+2. Opsional, sebelum Run, ubah konstanta di awal blok `declare` pada salinan file yang akan diupload:
 
-Script aman dijalankan ulang: user yang sudah ada tidak diubah, dan role tidak diduplikasi. Untuk menghapus semua user demo, jalankan [`database/admin/remove_demo_users.sql`](database/admin/remove_demo_users.sql).
+   | Konstanta | Default | Fungsi |
+   | --- | --- | --- |
+   | `c_password` | `null` | `null`: password **acak** per user. Diisi: **semua user memakai password yang Anda tentukan**. |
+   | `c_extra_admin` | `null` | Username workspace Anda sendiri, untuk didaftarkan sebagai `ADMIN` MBMS. Tanpa ini, setelah `MBMS_ADMIN` terdaftar, menu Administration hanya bisa dibuka lewat `MBMS_ADMIN`. |
+   | `c_email_domain` | `example.com` | Domain email dummy: `<username>@<domain>`. |
+   | `c_workspace` | `null` | Hanya diisi bila dijalankan lewat SQLcl, bukan SQL Workshop. |
+
+   Contoh **password sama untuk semua user**:
+
+   ```sql
+   c_password     constant varchar2(100) := 'Demo#Mbms2026';
+   ```
+
+   Password harus lolos password policy workspace. Biasanya: campuran huruf besar, huruf kecil, angka, dan tanda baca, serta tidak mengandung username. Bila tidak lolos, `APEX_UTIL.CREATE_USER` akan error.
+3. Buka **SQL Workshop → SQL Scripts → Upload** → [`database/admin/create_demo_users.sql`](database/admin/create_demo_users.sql) → **Run**.
+4. Buka hasil run (**View Results**). Output berisi password tiap user, baik acak maupun yang Anda tentukan. Password acak tidak disimpan di mana pun, jadi **catat sekarang**.
+
+Catatan:
+
+- **Aman dijalankan ulang.** User yang sudah ada **tidak diubah**, termasuk password-nya, dan role tidak diduplikasi.
+- **Mengganti password user yang sudah terlanjur dibuat**, misalnya dari acak ke password sendiri:
+  1. Jalankan [`database/admin/remove_demo_users.sql`](database/admin/remove_demo_users.sql). Akun demo dan role MBMS-nya dihapus.
+  2. Jalankan lagi `create_demo_users.sql` dengan `c_password` yang sudah diisi. Role terdaftar ulang otomatis.
+
+  Alternatif: ubah password per user di **Administration → Manage Users and Groups**.
+- **Jangan commit password.** Edit `c_password` hanya di salinan yang diupload. File di repository tetap `null`.
+- **Menghapus semua user demo:** jalankan `remove_demo_users.sql`. Akun lain, termasuk akun Anda, tidak disentuh.
 
 **Cara manual:**
 
