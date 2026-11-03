@@ -110,6 +110,7 @@ jobs:
           unzip -l "$ADB_WALLET" | grep -q tnsnames.ora || { echo "::error::Wallet tidak berisi tnsnames.ora"; exit 1; }
 
       - name: Preflight (koneksi, versi APEX, workspace, objek MBMS)
+        timeout-minutes: 5
         id: preflight
         run: |
           out=$(scripts/oci-sql.sh <<SQL
@@ -123,7 +124,7 @@ jobs:
                                  'MDM_ITEM','PRT_JOB_ORDER','PRJ_PROJECT','PUR_REQUISITION',
                                  'INV_STOCK_TXN','MBMS_SEC','MBMS_DOC','MBMS_INV','MBMS_APPROVAL');
           SQL
-          )
+          ) || { rc=$?; echo "$out"; echo "::error::SQLcl gagal (exit $rc). Lihat output di atas."; exit $rc; }
           echo "$out"
           ver=$(sed -n 's/^APEX_VERSION=//p' <<<"$out" | tr -d '[:space:]')
           ws_ok=$(sed -n 's/^WS_OK=//p' <<<"$out" | tr -d '[:space:]')
@@ -179,6 +180,7 @@ jobs:
           SQL
 
       - name: Verifikasi
+        timeout-minutes: 5
         if: inputs.deploy_app
         run: |
           out=$(scripts/oci-sql.sh <<SQL
@@ -191,7 +193,7 @@ jobs:
            order by last_updated_on desc
            fetch first 1 row only;
           SQL
-          )
+          ) || { rc=$?; echo "$out"; echo "::error::SQLcl gagal (exit $rc). Lihat output di atas."; exit $rc; }
           echo "$out"
           app=$(sed -n 's/^APP=//p' <<<"$out")
           if [[ -z "$app" ]]; then
