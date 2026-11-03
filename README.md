@@ -36,9 +36,9 @@ Rancangan lengkap ada di [`docs/MBMS-MVP-APEXlang.md`](docs/MBMS-MVP-APEXlang.md
 | `database/admin/create_demo_users.sql` | Membuat akun workspace demo dan mendaftarkan role MBMS (`remove_demo_users.sql` untuk menghapus) |
 | `apex-static/mbms-nav-fix.js` | Workaround side menu di HP (bug Universal Theme 26.2.1) |
 | `tools/apexgen/` | Generator scaffold `.apx` dan pemeriksa struktur |
-| `scripts/` | `build-install-sql.sh` (gabung SQL), `package-apex.sh` (buat zip) |
+| `scripts/` | `build-install-sql.sh` (gabung SQL), `package-apex.sh` (buat zip), `oci-sql.sh` (SQLcl ke ADB via wallet) |
 | `tests/e2e/` | Test Playwright: regression side menu dan smoke test halaman |
-| `.github/workflows/` | `validate-apex.yml` (SQLcl `apex validate`), `e2e-playwright.yml` (E2E ke oracleapex.com) |
+| `.github/workflows/` | `validate-apex.yml` (SQLcl `apex validate`), `e2e-playwright.yml` (E2E ke oracleapex.com), `deploy-oci.yml` (deploy ke APEX di OCI) |
 | `.claude/skills/apexlang/` | Skill APEXlang resmi dari [oracle/skills](https://github.com/oracle/skills) (26.1 dan 26.2) |
 
 ---
@@ -225,6 +225,7 @@ Dari data dummy, sisa anggaran WBS 2.0 proyek conveyor adalah **80 jt − 42,8 j
 | --- | --- | --- |
 | **Validate APEXlang** (`validate-apex.yml`) | Push ke `main`/`claude/**` atau PR yang mengubah `apex/` | Pemeriksaan struktur, SQLcl `apex validate` (tanpa database), lalu artifact zip siap import |
 | **E2E Playwright** (`e2e-playwright.yml`) | Manual (Run workflow), setelah import versi baru | Regression side menu di HP/desktop dan smoke test 15 halaman ke aplikasi di oracleapex.com |
+| **Deploy to OCI** (`deploy-oci.yml`) | Manual (Run workflow) | Validate, preflight (APEX >= 26.2, workspace, objek MBMS), opsional install objek DB, `apex import` ke schema `XTDCLATRX` di Autonomous Database |
 
 Secret untuk E2E (Settings → Secrets and variables → Actions):
 
@@ -232,6 +233,27 @@ Secret untuk E2E (Settings → Secrets and variables → Actions):
 - `APEX_USERNAME` / `APEX_PASSWORD`: sebaiknya `MBMS_E2E`.
 
 Detail ada di [`tests/e2e/README.md`](tests/e2e/README.md).
+
+### Deploy ke APEX di OCI (`deploy-oci.yml`)
+
+Setup sekali di **Settings → Environments → New environment** `oci-xtdclatrx`. Sebaiknya aktifkan **Required reviewers**.
+
+| Jenis | Nama | Isi |
+| --- | --- | --- |
+| Secret | `ADB_WALLET_BASE64` | Wallet ADB dalam base64: `base64 -w0 Wallet_xxx.zip` (macOS: `base64 -i Wallet_xxx.zip`) |
+| Secret | `DB_USERNAME` | `XTDCLATRX` |
+| Secret | `DB_PASSWORD` | Password schema (tanpa tanda kutip ganda) |
+| Variable | `DB_TNS_ALIAS` | Alias di `tnsnames.ora` wallet, misalnya `xxx_high` |
+| Variable | `APEX_WORKSPACE` | Workspace APEX yang memakai schema `XTDCLATRX` |
+| Variable | `APEX_APP_ID` | Opsional. Application ID tujuan; kosong = ID dari import |
+
+Jalankan dari **Actions → Deploy to OCI (APEX) → Run workflow**:
+
+- `install_db`: pasang objek DB dan data dummy. Hanya jalan bila schema **belum** berisi objek MBMS; bila sudah ada, workflow berhenti tanpa mengubah apa pun.
+- `deploy_app`: import `apex/mbms`. Aplikasi yang sudah ada dengan ID sama akan diganti.
+- `confirm_schema`: ketik `XTDCLATRX`. Harus sama dengan `DB_USERNAME`.
+
+Workflow gagal di preflight bila APEX target < 26.2 atau schema tidak terdaftar di workspace. Runner GitHub harus bisa mengakses ADB port 1522. Bila ADB memakai access control list atau private endpoint, pakai self-hosted runner di dalam VCN. User demo (`create_demo_users.sql`) tetap dijalankan manual.
 
 ---
 
